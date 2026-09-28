@@ -1,0 +1,37 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "WriteNewReceipts",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::kijanikiosk-receipts-prod/receipts/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms",
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:af-south-1:111122223333:key/1a2b3c4d-5e6f-7a8b-9c0d-receiptskey01"
+        }
+      }
+    },
+    {
+      "Sid": "ReadReceiptsForEmail",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::kijanikiosk-receipts-prod/receipts/*"
+    },
+    {
+      "Sid": "UseReceiptsKeyOnlyThroughS3",
+      "Effect": "Allow",
+      "Action": [
+        "kms:GenerateDataKey",
+        "kms:Decrypt"
+      ],
+      "Resource": "arn:aws:kms:af-south-1:111122223333:key/1a2b3c4d-5e6f-7a8b-9c0d-receiptskey01",
+      "Condition": {
+        "StringEquals": {
+          "kms:ViaService": "s3.af-south-1.amazonaws.com"
+        }
+      }
+    }
+  ]
+}
