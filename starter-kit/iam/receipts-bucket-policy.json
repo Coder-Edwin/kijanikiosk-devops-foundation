@@ -1,0 +1,33 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyAnyRequestWithoutTLS",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::kijanikiosk-receipts-prod",
+        "arn:aws:s3:::kijanikiosk-receipts-prod/*"
+      ],
+      "Condition": {
+        "Bool": { "aws:SecureTransport": "false" }
+      }
+    },
+    {
+      "Sid": "AppRoleOnlyThroughOurVpcEndpoint",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": ["s3:PutObject", "s3:GetObject"],
+      "Resource": "arn:aws:s3:::kijanikiosk-receipts-prod/receipts/*",
+      "Condition": {
+        "ArnEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::111122223333:role/kijanikiosk-receipt-writer"
+        },
+        "StringNotEquals": {
+          "aws:SourceVpce": "vpce-0kijani0s3receipts"
+        }
+      }
+    }
+  ]
+}
