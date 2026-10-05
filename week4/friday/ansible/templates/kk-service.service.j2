@@ -1,0 +1,77 @@
+# {{ ansible_managed }}
+# KijaniKiosk {{ service_name }}: hardened systemd unit (Week 3 directives, encoded in Ansible).
+# Target: `systemd-analyze security {{ service_name }}` exposure below {{ security_score_max }}.
+
+[Unit]
+Description={{ service_description }}
+Documentation=https://github.com/Coder-Edwin/kijanikiosk-devops-foundation
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ service_user }}
+Group={{ service_user }}
+
+# Challenge D: the env file sits under {{ kk_config_dir }}, NOT /etc, owned
+# root:{{ service_user }} 0640. Readable by this account, writable by nobody
+# but root, and outside the paths operators expect to hand-edit.
+EnvironmentFile={{ kk_config_dir }}/{{ service_env_file }}
+WorkingDirectory={{ service_app_dir }}
+ExecStart={{ service_python }} -m http.server ${SERVICE_PORT} --bind ${BIND_ADDRESS} --directory {{ service_app_dir }}
+Restart=on-failure
+RestartSec={{ service_restart_sec }}
+
+# Output is opened by systemd (PID 1) before the sandbox is applied, so the
+# service can append to its log without having write access to {{ kk_log_dir }}.
+StandardOutput=append:{{ kk_log_dir }}/{{ service_name }}.log
+StandardError=inherit
+
+# ---- Filesystem --------------------------------------------------------------
+# strict = the whole filesystem is read-only to this process. The only
+# writable path is the service's own data directory.
+ProtectSystem=strict
+ReadWritePaths={{ service_data_dir }}
+ProtectHome=yes
+PrivateTmp=yes
+UMask=0027
+
+# ---- Privilege ---------------------------------------------------------------
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+KeyringMode=private
+
+# ---- Kernel and devices ------------------------------------------------------
+PrivateDevices=yes
+DevicePolicy=closed
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+
+# ---- System calls ------------------------------------------------------------
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+
+# ---- Network -----------------------------------------------------------------
+RestrictAddressFamilies=AF_INET AF_INET6
+{% if service_ip_allow | length > 0 %}
+IPAddressDeny=any
+IPAddressAllow={{ service_ip_allow | join(' ') }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

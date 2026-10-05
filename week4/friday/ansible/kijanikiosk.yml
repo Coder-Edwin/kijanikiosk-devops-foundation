@@ -1,0 +1,100 @@
+---
+# KijaniKiosk staging: blank Ubuntu 22.04 -> Week 3 baseline, on all three servers.
+#
+#   Phase 1 packages        Phase 5 firewall
+#   Phase 2 service accounts Phase 6 journal persistence
+#   Phase 3 directories      Phase 7 logrotate
+#   Phase 4 systemd units    Phase 8 verification (read-only, never "changed")
+#
+# Run through pipeline.sh, which generates inventory.ini from Terraform output.
+
+- name: Wait for freshly created servers to accept SSH
+  hosts: kijanikiosk
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH and Python (cloud-init can take a minute)
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+        delay: 0
+        sleep: 5
+
+    - name: Wait for cloud-init to finish first-boot setup
+      ansible.builtin.command:
+        cmd: cloud-init status --wait
+      changed_when: false
+      # 2 = finished with recoverable warnings; still safe to proceed.
+      failed_when: cloud_init.rc not in [0, 2]
+      register: cloud_init
+
+- name: Configure KijaniKiosk servers to the Week 3 baseline
+  hosts: kijanikiosk
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Terraform and Ansible agree on this server's port
+      ansible.builtin.assert:
+        that:
+          - (tf_app_port | int) == (service_port | int)
+        fail_msg: >-
+          Terraform opened port {{ tf_app_port }} for {{ inventory_hostname }} but
+          host_vars says service_port={{ service_port }}. Fix one of them.
+        quiet: true
+
+    - name: Target is Ubuntu 22.04
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['distribution'] == 'Ubuntu'
+          - ansible_facts['distribution_version'] == '22.04'
+        fail_msg: "Expected Ubuntu 22.04, found {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+        quiet: true
+
+  tasks:
+    - name: Phase 1 - packages
+      ansible.builtin.import_tasks: tasks/01-packages.yml
+      tags: [packages]
+
+    - name: Phase 2 - service accounts
+      ansible.builtin.import_tasks: tasks/02-accounts.yml
+      tags: [accounts]
+
+    - name: Phase 3 - directory structure
+      ansible.builtin.import_tasks: tasks/03-directories.yml
+      tags: [directories]
+
+    - name: Phase 4 - systemd unit
+      ansible.builtin.import_tasks: tasks/04-systemd.yml
+      tags: [systemd]
+
+    - name: Phase 5 - firewall
+      ansible.builtin.import_tasks: tasks/05-firewall.yml
+      tags: [firewall]
+
+    - name: Phase 6 - journal persistence
+      ansible.builtin.import_tasks: tasks/06-journal.yml
+      tags: [journal]
+
+    - name: Phase 7 - logrotate
+      ansible.builtin.import_tasks: tasks/07-logrotate.yml
+      tags: [logrotate]
+
+    # Handlers normally run at the end of the play. Flush them here so the
+    # verification phase tests the service with its NEW configuration.
+    - name: Apply pending restarts before verification
+      ansible.builtin.meta: flush_handlers
+
+    - name: Phase 8 - verification
+      ansible.builtin.import_tasks: tasks/08-verify.yml
+      tags: [verify]
+
+  handlers:
+    - name: Restart kk service
+      ansible.builtin.systemd_service:
+        name: "{{ service_name }}"
+        state: restarted
+        daemon_reload: true
+
+    - name: Restart journald
+      ansible.builtin.systemd_service:
+        name: systemd-journald
+        state: restarted

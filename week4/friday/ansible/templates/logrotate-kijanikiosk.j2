@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+# Rotate KijaniKiosk service logs. copytruncate is used because systemd holds
+# the file open on the service's behalf; the service cannot reopen it itself.
+{{ kk_log_dir }}/*.log {
+    {{ logrotate_frequency }}
+    rotate {{ logrotate_keep }}
+    maxsize {{ logrotate_max_size }}
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    dateext
+    su root {{ kk_group }}
+}

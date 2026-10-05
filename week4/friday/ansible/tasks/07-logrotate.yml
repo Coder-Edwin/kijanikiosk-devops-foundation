@@ -1,0 +1,11 @@
+---
+# logrotate runs from its own daily timer and re-reads config each time, so
+# there is nothing to restart: no handler needed.
+- name: Rotate KijaniKiosk service logs
+  ansible.builtin.template:
+    src: templates/logrotate-kijanikiosk.j2
+    dest: /etc/logrotate.d/kijanikiosk
+    owner: root
+    group: root
+    mode: "0644"
+    validate: logrotate -d %s
