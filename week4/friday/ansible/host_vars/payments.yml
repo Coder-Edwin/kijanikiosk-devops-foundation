@@ -1,0 +1,27 @@
+---
+server_hostname: kijanikiosk-payments
+service_short_name: payments
+service_name: kk-payments
+service_user: kk-payments
+service_description: KijaniKiosk payments service (M-Pesa / card integration)
+service_port: 8081
+# Challenge D: the environment file lives under /opt/kijanikiosk/config,
+# owned root:kk-payments 0640, so the service account can read it and
+# nothing else on the box can.
+service_env_file: payments-api.env
+
+# Payments must never be reachable from the internet: only from inside the VPC
+# (the api server) and from localhost for health checks.
+service_ufw_sources:
+  - "{{ vpc_cidr }}"
+service_ip_allow:
+  - localhost
+  - "{{ vpc_cidr }}"
+
+# Service-specific environment. SERVICE_NAME, SERVICE_PORT, BIND_ADDRESS and
+# APP_ENV are added by the template from the variables above.
+service_extra_env:
+  # Placeholders only. Real Daraja keys come from a secrets manager in Week 5+,
+  # never from this repository.
+  MPESA_ENV: sandbox
+  MPESA_SHORTCODE: "174379"

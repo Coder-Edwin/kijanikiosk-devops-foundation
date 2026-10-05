@@ -1,0 +1,44 @@
+---
+# Read-only checks. Every task here is changed_when: false, so verification
+# never spoils the changed=0 proof on the second run.
+
+- name: Service answers on its port
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ service_port }}/"
+    status_code: 200
+    return_content: false
+  register: health
+  retries: 10
+  delay: 3
+  until: health.status == 200
+
+# Challenge D: prove the service account can read its own environment file.
+- name: Service account can read its environment file
+  ansible.builtin.command:
+    cmd: "cat {{ kk_config_dir }}/{{ service_env_file }}"
+  become: true
+  become_user: "{{ service_user }}"
+  changed_when: false
+
+- name: Measure systemd security exposure
+  ansible.builtin.command:
+    cmd: "systemd-analyze security {{ service_name }}.service --no-pager"
+  register: security_report
+  changed_when: false
+
+- name: Extract the exposure score
+  ansible.builtin.set_fact:
+    security_score: >-
+      {{ (security_report.stdout_lines | last)
+         | regex_search('exposure level for [^:]+: ([0-9.]+)', '\1') | first | float }}
+
+- name: Report the score
+  ansible.builtin.debug:
+    msg: "{{ service_name }} exposure score {{ security_score }} (target < {{ security_score_max }}): {{ security_report.stdout_lines | last }}"
+
+- name: Score is below the Week 3 target
+  ansible.builtin.assert:
+    that:
+      - (security_score | float) < (security_score_max | float)
+    fail_msg: "{{ service_name }} scored {{ security_score }}; must be below {{ security_score_max }}"
+    success_msg: "{{ service_name }} scored {{ security_score }} (< {{ security_score_max }})"

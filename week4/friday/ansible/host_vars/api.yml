@@ -1,0 +1,21 @@
+---
+server_hostname: kijanikiosk-api
+service_short_name: api
+service_name: kk-api
+service_user: kk-api
+service_description: KijaniKiosk API (customer-facing)
+service_port: 8080
+service_env_file: api.env
+
+# The api is the one service the operator may reach from outside the VPC, so
+# its firewall rule allows any source (the security group narrows it to the
+# operator's IP) and it has no systemd IP allow-list.
+service_ufw_sources:
+  - any
+service_ip_allow: []
+
+# Service-specific environment. SERVICE_NAME, SERVICE_PORT, BIND_ADDRESS and
+# APP_ENV are added by the template from the variables above.
+service_extra_env:
+  PAYMENTS_URL: "http://{{ hostvars['payments']['private_ip'] }}:{{ hostvars['payments']['service_port'] }}"
+  LOGS_URL: "http://{{ hostvars['logs']['private_ip'] }}:{{ hostvars['logs']['service_port'] }}"

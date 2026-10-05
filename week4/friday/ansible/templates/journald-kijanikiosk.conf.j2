@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+# Keep the system journal across reboots so incidents can be investigated
+# after a restart, with a hard cap so logs can never fill the disk.
+[Journal]
+Storage={{ journal_storage }}
+Compress={{ journal_compress }}
+SystemMaxUse={{ journal_system_max_use }}
+MaxRetentionSec={{ journal_max_retention }}

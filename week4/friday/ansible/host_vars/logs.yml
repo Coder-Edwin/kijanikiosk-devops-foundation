@@ -1,0 +1,19 @@
+---
+server_hostname: kijanikiosk-logs
+service_short_name: logs
+service_name: kk-logs
+service_user: kk-logs
+service_description: KijaniKiosk log collector
+service_port: 8082
+service_env_file: logs.env
+
+service_ufw_sources:
+  - "{{ vpc_cidr }}"
+service_ip_allow:
+  - localhost
+  - "{{ vpc_cidr }}"
+
+# Service-specific environment. SERVICE_NAME, SERVICE_PORT, BIND_ADDRESS and
+# APP_ENV are added by the template from the variables above.
+service_extra_env:
+  RETENTION_DAYS: "14"

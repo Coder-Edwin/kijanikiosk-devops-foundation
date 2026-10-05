@@ -1,0 +1,28 @@
+---
+- name: Create the shared KijaniKiosk group
+  ansible.builtin.group:
+    name: "{{ kk_group }}"
+    system: true
+    state: present
+
+- name: Create the service account's own group
+  ansible.builtin.group:
+    name: "{{ service_user }}"
+    system: true
+    state: present
+
+# One locked-down account per service: no login shell, no home directory,
+# locked password. If the service is compromised, the attacker holds an
+# account that can do almost nothing.
+- name: Create the service account
+  ansible.builtin.user:
+    name: "{{ service_user }}"
+    group: "{{ service_user }}"
+    groups: ["{{ kk_group }}"]
+    append: true
+    system: true
+    shell: "{{ service_shell }}"
+    create_home: false
+    home: /nonexistent
+    password_lock: true
+    state: present

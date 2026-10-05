@@ -1,0 +1,11 @@
+# Terraform working files and any local state (real state lives in S3)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+*.tfvars
+!*.tfvars.example
+# Ansible per-run SSH host keys
+ansible/.ansible_known_hosts

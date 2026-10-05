@@ -1,0 +1,32 @@
+---
+# Order matters: allow SSH BEFORE turning the firewall on, or Ansible locks
+# itself out mid-run.
+- name: Rate-limit SSH (source restriction is done by the security group)
+  community.general.ufw:
+    rule: limit
+    port: "{{ ufw_ssh_port }}"
+    proto: tcp
+    comment: ssh
+
+- name: Allow the service port from its permitted sources only
+  community.general.ufw:
+    rule: allow
+    port: "{{ service_port }}"
+    proto: tcp
+    from_ip: "{{ item }}"
+    comment: "{{ service_name }}"
+  loop: "{{ service_ufw_sources }}"
+
+- name: Deny all other incoming traffic by default
+  community.general.ufw:
+    direction: incoming
+    default: deny
+
+- name: Allow outgoing traffic by default (package updates)
+  community.general.ufw:
+    direction: outgoing
+    default: allow
+
+- name: Enable the firewall
+  community.general.ufw:
+    state: enabled

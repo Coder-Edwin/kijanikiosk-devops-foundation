@@ -1,0 +1,5 @@
+---
+# Collections the playbook needs beyond ansible-core.
+# Already included if you installed the full "ansible" package.
+collections:
+  - name: community.general   # ufw module (Phase 5)

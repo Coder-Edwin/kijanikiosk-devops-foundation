@@ -1,0 +1,28 @@
+---
+- name: Set the hostname
+  ansible.builtin.hostname:
+    name: "{{ server_hostname }}"
+
+# Without this, sudo warns "unable to resolve host" after the rename.
+- name: Make the new hostname resolvable locally
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1\s'
+    line: "127.0.1.1 {{ server_hostname }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+# cache_valid_time keeps this idempotent: the index is refreshed at most once
+# a day, so the second pipeline run reports "ok" rather than "changed".
+- name: Refresh the apt package index if older than a day
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: "{{ apt_cache_valid_time }}"
+    lock_timeout: "{{ apt_lock_timeout }}"
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ base_packages }}"
+    state: present
+    lock_timeout: "{{ apt_lock_timeout }}"

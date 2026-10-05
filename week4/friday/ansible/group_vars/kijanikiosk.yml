@@ -1,0 +1,65 @@
+---
+# Values shared by all three KijaniKiosk servers.
+# Anything that differs per server lives in host_vars/<name>.yml.
+
+# --- Connection (Challenge B) ---------------------------------------------
+# The ONE place the SSH key path is defined. pipeline.sh reads this line and
+# hands "<path>.pub" to Terraform, which uploads it as the EC2 key pair named
+# by Terraform's ssh_key_name variable. Same key on both sides by construction.
+ssh_private_key_path: ~/.ssh/kijanikiosk
+ansible_user: ubuntu
+ansible_ssh_private_key_file: "{{ ssh_private_key_path }}"
+ansible_python_interpreter: /usr/bin/python3
+
+environment_name: staging
+
+# --- Phase 1: packages ------------------------------------------------------
+apt_cache_valid_time: 86400
+# Fresh cloud images run apt jobs at boot; wait for the lock instead of failing.
+apt_lock_timeout: 300
+base_packages:
+  - python3
+  - ufw
+  - logrotate
+  - curl
+  - jq
+  - acl
+  - unattended-upgrades
+
+# --- Phase 2: service accounts ---------------------------------------------
+kk_group: kijanikiosk
+service_shell: /usr/sbin/nologin
+
+# --- Phase 3: directory structure ------------------------------------------
+kk_base_dir: /opt/kijanikiosk
+kk_config_dir: "{{ kk_base_dir }}/config"
+kk_log_dir: /var/log/kijanikiosk
+service_root_dir: "{{ kk_base_dir }}/{{ service_short_name }}"
+service_app_dir: "{{ service_root_dir }}/app"
+service_data_dir: "{{ service_root_dir }}/data"
+
+# --- Phase 4: systemd -------------------------------------------------------
+service_python: /usr/bin/python3
+service_restart_sec: 5
+service_bind_address: 0.0.0.0
+# Week 3 target, carried into Week 4 (Requirement 5).
+security_score_max: 2.5
+
+# --- Phase 5: firewall ------------------------------------------------------
+# SSH is rate-limited from anywhere at the host firewall. Source restriction to
+# the operator's IP is done one layer out, by the Terraform security group.
+# Reason: the operator's IP changes; Terraform updates the security group
+# before Ansible runs, but a host-firewall rule pinned to the old IP would
+# lock Ansible out before it could fix itself.
+ufw_ssh_port: 22
+
+# --- Phase 6: journal persistence ------------------------------------------
+journal_storage: persistent
+journal_system_max_use: 200M
+journal_max_retention: 1month
+journal_compress: "yes"
+
+# --- Phase 7: logrotate -----------------------------------------------------
+logrotate_frequency: daily
+logrotate_keep: 14
+logrotate_max_size: 50M
