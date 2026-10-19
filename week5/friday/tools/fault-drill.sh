@@ -76,4 +76,4 @@ while IFS='|' read -r step kind sha what; do
 done < "$PLAN"
 
 chown -R "${SUDO_USER:-root}": "${HERE}/evidence" 2>/dev/null || true
-echo "Drill complete. Summary: week5/friday/evidence/fault-drill-summary.txt"
+echo "Drill complete. Summary: ${SUMMARY#"${HERE}/"}"
