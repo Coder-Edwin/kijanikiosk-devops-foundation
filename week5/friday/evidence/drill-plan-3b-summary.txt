@@ -1,0 +1,51 @@
+KijaniKiosk fault-injection drill  2026-10-19 22:12:04 UTC
+Each row: the commit built, the stage results Jenkins recorded, and the pipeline's own notices.
+
+=== 3b FAULT: Test: fee band 1,001-1,500 charges KES 25 instead of 23 (fixed Jenkinsfile)
+commit 583cf66, build #19
+build #19 still running...
+build #19 still running...
+build #19 still running...
+build #19 still running...
+build #19 still running...
+build #19 still running...
+Build #19  result=FAILED  total=57.1s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.4s
+Lint              SUCCESS              12.8s
+Build             SUCCESS              11.8s
+Verify            SUCCESS               0.2s
+Test              FAILED               10.3s
+Security Audit    SUCCESS               9.9s
+Archive           FAILED                0.1s
+Publish           FAILED                0.2s
+Declarative: Post ActionsUNSTABLE              0.8s
+  |   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  | ERROR: script returned exit code 1
+  | ✖ failing tests:
+  | found 0 vulnerabilities
+  | NOTIFY team: kijanikiosk-ci #19 FAILED in stage 'Test' (commit 583cf66). Nothing was published. Log: http://localhost:8080/job/kijanikiosk-ci/19/console
+  | Stage "Archive" skipped due to earlier failure(s)
+  | Stage "Publish" skipped due to earlier failure(s)
+  | STATUS CHANGE: kijanikiosk-ci went from SUCCESS to FAILURE at #19
+
+=== 3b RESTORE: revert step 3b
+commit 1b12f13, build #20
+build #20 still running...
+build #20 still running...
+build #20 still running...
+Build #20  result=SUCCESS  total=26.6s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.0s
+Lint              SUCCESS               8.7s
+Build             SUCCESS               3.1s
+Verify            SUCCESS               0.1s
+Test              SUCCESS               3.1s
+Security Audit    SUCCESS               2.7s
+Archive           SUCCESS               1.8s
+Publish           SUCCESS               2.2s
+Declarative: Post ActionsSUCCESS               0.2s
+  | found 0 vulnerabilities
+  | PUBLISHED kijanikiosk-payments@1.0.0-1b12f13
+  | STATUS CHANGE: kijanikiosk-ci went from FAILURE to SUCCESS at #20
+

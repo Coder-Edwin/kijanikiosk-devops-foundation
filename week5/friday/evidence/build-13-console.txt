@@ -1,0 +1,253 @@
+Started by user admin
+Checking out git https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git into /var/jenkins_home/workspace/kijanikiosk-ci@script/8dbce8b5497c1e2cc91e3a846624547b04f94a974bc0d7de5f04d303e333f9cb to read Jenkinsfile
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/kijanikiosk-ci@script/8dbce8b5497c1e2cc91e3a846624547b04f94a974bc0d7de5f04d303e333f9cb/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git # timeout=10
+Fetching upstream changes from https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse 795167e7c978f5af63ae6ebbd1cc0c53b958eb2d^{commit} # timeout=10
+Checking out Revision 795167e7c978f5af63ae6ebbd1cc0c53b958eb2d (detached)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 795167e7c978f5af63ae6ebbd1cc0c53b958eb2d # timeout=10
+Commit message: "fault(audit): add lodash 4.17.20, which has a known high-severity vulnerability (drill step 4)"
+ > git rev-list --no-walk 98708a3953ac881aeed269c2b012a20e3d1c5931 # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/kijanikiosk-ci
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git init /var/jenkins_home/workspace/kijanikiosk-ci # timeout=10
+Fetching upstream changes from https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse 795167e7c978f5af63ae6ebbd1cc0c53b958eb2d^{commit} # timeout=10
+Checking out Revision 795167e7c978f5af63ae6ebbd1cc0c53b958eb2d (detached)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 795167e7c978f5af63ae6ebbd1cc0c53b958eb2d # timeout=10
+Commit message: "fault(audit): add lodash 4.17.20, which has a known high-severity vulnerability (drill step 4)"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:22.23.3-alpine3.24
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container d56bec310c81baeba6d976dcba7aade7752ae6bb3239bc653171aa31fe02d873
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/kijanikiosk-ci --volumes-from d56bec310c81baeba6d976dcba7aade7752ae6bb3239bc653171aa31fe02d873 -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:22.23.3-alpine3.24 cat
+$ docker top 0772310dacbebda5ec55845ba95f17a90344c4f40cffa9db6f7a4cf249cd4dcd -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 10 min
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:56:33.959Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:56:34.299Z] + node --version
+[2026-10-19T21:56:34.299Z] v22.23.3
+[2026-10-19T21:56:34.299Z] + npm --version
+[2026-10-19T21:56:34.851Z] 10.9.9
+[Pipeline] sh
+[2026-10-19T21:56:35.173Z] + npm ci --no-audit
+[2026-10-19T21:56:41.662Z] 
+[2026-10-19T21:56:41.662Z] added 70 packages in 6s
+[Pipeline] sh
+[2026-10-19T21:56:42.193Z] + npm run lint
+[2026-10-19T21:56:42.744Z] 
+[2026-10-19T21:56:42.744Z] > kijanikiosk-payments@1.0.0 lint
+[2026-10-19T21:56:42.744Z] > eslint .
+[2026-10-19T21:56:42.744Z] 
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:56:44.361Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:56:44.729Z] + node -p 'require('"'"'./package.json'"'"').version'
+[Pipeline] sh
+[2026-10-19T21:56:45.561Z] + node -p 'require('"'"'./package.json'"'"').name'
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+[2026-10-19T21:56:46.202Z] + npm version 1.0.0-795167e --no-git-tag-version
+[2026-10-19T21:56:46.453Z] v1.0.0-795167e
+[Pipeline] sh
+[2026-10-19T21:56:47.341Z] + npm run build
+[2026-10-19T21:56:47.913Z] 
+[2026-10-19T21:56:47.913Z] > kijanikiosk-payments@1.0.0-795167e build
+[2026-10-19T21:56:47.913Z] > node scripts/build.js
+[2026-10-19T21:56:47.913Z] 
+[2026-10-19T21:56:49.275Z] built 5 files into dist/ for kijanikiosk-payments@1.0.0-795167e
+[Pipeline] echo
+[2026-10-19T21:56:49.303Z] Artifact version: kijanikiosk-payments@1.0.0-795167e
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:56:49.744Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] dir
+[2026-10-19T21:56:49.760Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] sh
+[Pipeline] sh
+[2026-10-19T21:56:50.055Z] + npm test
+[2026-10-19T21:56:50.086Z] + npm audit '--omit=dev' '--audit-level=high'
+[2026-10-19T21:56:50.607Z] 
+[2026-10-19T21:56:50.607Z] > kijanikiosk-payments@1.0.0-795167e test
+[2026-10-19T21:56:50.607Z] > mkdir -p reports && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=reports/junit.xml test/*.test.js
+[2026-10-19T21:56:50.607Z] 
+[2026-10-19T21:56:50.860Z] ✔ band edges are inclusive (5.220916ms)
+[2026-10-19T21:56:50.860Z] ✔ rejects amounts outside the allowed range (2.115935ms)
+[2026-10-19T21:56:51.111Z] ✔ creates a pending payment with fee and total (44.918079ms)
+[2026-10-19T21:56:51.111Z] ✔ a retried request with the same idempotency key is not charged twice (8.019231ms)
+[2026-10-19T21:56:51.111Z] ✔ returns every validation error at once (0.994233ms)
+[2026-10-19T21:56:51.111Z] ✔ accepts the formats customers type (8.957522ms)
+[2026-10-19T21:56:51.111Z] ✔ accepts 01xx numbers (0.668999ms)
+[2026-10-19T21:56:51.111Z] ✔ rejects numbers that are not Kenyan mobiles (1.453787ms)
+[2026-10-19T21:56:51.662Z] ✔ GET /health (337.359471ms)
+[2026-10-19T21:56:51.662Z] ✔ POST /payments creates, then replays on retry (65.726738ms)
+[2026-10-19T21:56:51.662Z] ✔ POST /payments rejects invalid input with 422 (21.060392ms)
+[2026-10-19T21:56:51.916Z] ℹ tests 11
+[2026-10-19T21:56:51.916Z] ℹ suites 0
+[2026-10-19T21:56:51.916Z] ℹ pass 11
+[2026-10-19T21:56:51.916Z] ℹ fail 0
+[2026-10-19T21:56:51.916Z] ℹ cancelled 0
+[2026-10-19T21:56:51.916Z] ℹ skipped 0
+[2026-10-19T21:56:51.916Z] ℹ todo 0
+[2026-10-19T21:56:51.916Z] ℹ duration_ms 1367.666864
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[2026-10-19T21:56:54.213Z] # npm audit report
+[2026-10-19T21:56:54.213Z] 
+[2026-10-19T21:56:54.213Z] lodash  <=4.17.23
+[2026-10-19T21:56:54.213Z] Severity: high
+[2026-10-19T21:56:54.213Z] Command Injection in lodash - https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+[2026-10-19T21:56:54.213Z] Regular Expression Denial of Service (ReDoS) in lodash - https://github.com/advisories/GHSA-29mw-wpgm-hmr9
+[2026-10-19T21:56:54.213Z] lodash vulnerable to Code Injection via `_.template` imports key names - https://github.com/advisories/GHSA-r5fr-rjxr-66jc
+[2026-10-19T21:56:54.213Z] lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit` - https://github.com/advisories/GHSA-f23m-r3pf-42rh
+[2026-10-19T21:56:54.213Z] Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions - https://github.com/advisories/GHSA-xxjr-mmjv-4gpg
+[2026-10-19T21:56:54.213Z] fix available via `npm audit fix --force`
+[2026-10-19T21:56:54.213Z] Will install lodash@4.18.1, which is outside the stated dependency range
+[2026-10-19T21:56:54.213Z] node_modules/lodash
+[2026-10-19T21:56:54.213Z] 
+[2026-10-19T21:56:54.213Z] 1 high severity vulnerability
+[2026-10-19T21:56:54.213Z] 
+[2026-10-19T21:56:54.213Z] To address all issues, run:
+[2026-10-19T21:56:54.213Z]   npm audit fix --force
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[2026-10-19T21:56:54.405Z] Failed in branch Security Audit
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+Stage "Archive" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+Stage "Publish" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] junit
+[2026-10-19T21:56:55.240Z] Recording test results
+[2026-10-19T21:56:55.278Z] [Checks API] No suitable checks publisher found.
+[Pipeline] cleanWs
+[2026-10-19T21:56:55.313Z] [WS-CLEANUP] Deleting project workspace...
+[2026-10-19T21:56:55.313Z] [WS-CLEANUP] Deferred wipeout is used...
+[2026-10-19T21:56:55.324Z] [WS-CLEANUP] done
+[Pipeline] echo
+[2026-10-19T21:56:55.397Z] STATUS CHANGE: kijanikiosk-ci went from SUCCESS to FAILURE at #13
+[Pipeline] echo
+[2026-10-19T21:56:55.553Z] NOTIFY team: kijanikiosk-ci #13 FAILED in stage 'Security Audit' (commit 795167e). Nothing was published. Log: http://localhost:8080/job/kijanikiosk-ci/13/console
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 0772310dacbebda5ec55845ba95f17a90344c4f40cffa9db6f7a4cf249cd4dcd
+$ docker rm -f --volumes 0772310dacbebda5ec55845ba95f17a90344c4f40cffa9db6f7a4cf249cd4dcd
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

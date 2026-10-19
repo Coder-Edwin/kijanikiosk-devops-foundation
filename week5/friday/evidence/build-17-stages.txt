@@ -1,0 +1,11 @@
+Build #17  result=FAILED  total=42.9s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.6s
+Lint              SUCCESS              21.8s
+Build             SUCCESS               3.2s
+Verify            SUCCESS               0.1s
+Test              SUCCESS               2.0s
+Security Audit    SUCCESS               1.9s
+Archive           SUCCESS               2.1s
+Publish           FAILED                3.4s
+Declarative: Post ActionsSUCCESS               0.4s

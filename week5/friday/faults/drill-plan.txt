@@ -1,0 +1,13 @@
+# step|kind|commit|what was injected (built in this order by tools/fault-drill.sh)
+1|FAULT|d0ee50721cf7b23c075fb8f61377c78a9489b6d0|Lint: unused constant LOYALTY_DISCOUNT in src/fees.js
+1|RESTORE|019fb6efbab45f32a3cd159b587fec8de2d1c094|revert step 1
+2|FAULT|0e00576cb2618529446c1608577246490bed41b2|Build: package entry point no longer exports createServer()
+2|RESTORE|4b9c5cdbf2144834c8fe57bd1df130c1bcf0db74|revert step 2
+3|FAULT|156fabf0457ca1073716cc37aded9a49417ed9dc|Test: fee band 1,001-1,500 charges KES 25 instead of 23
+3|RESTORE|98708a3953ac881aeed269c2b012a20e3d1c5931|revert step 3
+4|FAULT|795167e7c978f5af63ae6ebbd1cc0c53b958eb2d|Security Audit: production dependency lodash 4.17.20 (known high-severity advisory)
+4|RESTORE|1d4db383ecccad6f9e41fb2cb74a90cd0e0449e2|revert step 4
+5|FAULT|8dc632ae774c09b9cf7b92e3c012c52b76178180|Archive: artifact pattern dist/*.tgz matches nothing
+5|RESTORE|31dc2b0ea4c3a071b10083e0d70b80f5d8d37f7f|revert step 5
+6|FAULT|31dc2b0ea4c3a071b10083e0d70b80f5d8d37f7f|Publish: rebuild an already-published commit (duplicate version 1.0.0-31dc2b0)
+6|RESTORE|f01ee4a19b0cad889015fa26c855b490ecbff355|build the next commit (new version 1.0.0-f01ee4a)

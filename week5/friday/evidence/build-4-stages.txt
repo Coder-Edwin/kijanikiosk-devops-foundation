@@ -1,0 +1,11 @@
+Build #4  result=SUCCESS  total=57.6s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               4.8s
+Lint              SUCCESS              11.6s
+Build             SUCCESS               2.6s
+Verify            SUCCESS               0.1s
+Test              SUCCESS               2.7s
+Security Audit    SUCCESS               2.2s
+Archive           SUCCESS               1.9s
+Publish           SUCCESS               5.7s
+Declarative: Post ActionsSUCCESS               0.4s
