@@ -1,0 +1,3 @@
+# step|kind|commit|what was injected (re-run of step 3 after the failure-notice fix 4e02d89)
+3b|FAULT|583cf66782b74c2100befadeda3f654c5f96b8cf|Test: fee band 1,001-1,500 charges KES 25 instead of 23 (fixed Jenkinsfile)
+3b|RESTORE|1b12f1380db9feff5bcde7a18cca5262104dca09|revert step 3b
