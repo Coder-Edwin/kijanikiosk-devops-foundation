@@ -2,14 +2,14 @@
 # Runs the fault-injection drill: builds each commit in faults/drill-plan.txt, in order,
 # through the real kijanikiosk-ci job, and saves the evidence for every run.
 # Each fault commit is followed by a restore commit, so the pipeline returns to green after every fault.
-# Usage (from the repo root, after git pull): sudo week5/friday/tools/fault-drill.sh
+# Usage (from the repo root, after git pull): sudo week5/friday/tools/fault-drill.sh [plan-file]
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")/.." && pwd)"            # week5/friday
-PLAN="${HERE}/faults/drill-plan.txt"
+PLAN="${1:-${HERE}/faults/drill-plan.txt}"   # optional: another plan file
 PW_FILE="${HERE}/infra/secrets/jenkins_admin_password"
 JENKINS="http://localhost:8080"; JOB="${JENKINS}/job/kijanikiosk-ci"
-SUMMARY="${HERE}/evidence/fault-drill-summary.txt"
+SUMMARY="${HERE}/evidence/$(basename "$PLAN" .txt)-summary.txt"
 [[ -r "$PW_FILE" ]] || { echo "run with sudo" >&2; exit 1; }
 mkdir -p "${HERE}/evidence"
 

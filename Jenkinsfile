@@ -25,25 +25,25 @@ pipeline {
         npm_config_fund      = 'false'
         npm_config_update_notifier = 'false'
         CI                   = 'true'
-        // Set at run time, not here: ARTIFACT_VERSION and PACKAGE_NAME (Build stage), LAST_STAGE (every stage).
+        // Set at run time, not here: ARTIFACT_VERSION and PACKAGE_NAME (Build stage), FAILED_STAGE (the stage that failed).
         // Values declared in this block are read-only for the whole run, so they cannot be declared here.
     }
 
     stages {
         stage('Lint') {
             steps {
-                script { env.LAST_STAGE = env.STAGE_NAME }
                 dir(env.APP_DIR) {
                     sh 'node --version && npm --version'
                     sh 'npm ci --no-audit'
                     sh 'npm run lint'
                 }
             }
+            post { failure { script { env.FAILED_STAGE = env.STAGE_NAME } } }   // each stage records its own failure: a shared
+                                                                                // 'current stage' variable races between parallel branches
         }
 
         stage('Build') {
             steps {
-                script { env.LAST_STAGE = env.STAGE_NAME }
                 dir(env.APP_DIR) {
                     script {
                         // <semver>-<git-sha>: every artifact traces back to exactly one commit.
@@ -59,6 +59,7 @@ pipeline {
                     echo "Artifact version: ${env.PACKAGE_NAME}@${env.ARTIFACT_VERSION}"
                 }
             }
+            post { failure { script { env.FAILED_STAGE = env.STAGE_NAME } } }
         }
 
         stage('Verify') {
@@ -66,38 +67,37 @@ pipeline {
             parallel {
                 stage('Test') {
                     steps {
-                        script { env.LAST_STAGE = env.STAGE_NAME }
                         dir(env.APP_DIR) {
                             sh 'npm test'
                         }
                     }
+                    post { failure { script { env.FAILED_STAGE = env.STAGE_NAME } } }
                 }
                 stage('Security Audit') {
                     steps {
-                        script { env.LAST_STAGE = env.STAGE_NAME }
                         dir(env.APP_DIR) {
                             // Only what ships to production, and only high/critical findings stop the line.
                             sh 'npm audit --omit=dev --audit-level=high'
                         }
                     }
+                    post { failure { script { env.FAILED_STAGE = env.STAGE_NAME } } }
                 }
             }
         }
 
         stage('Archive') {
             steps {
-                script { env.LAST_STAGE = env.STAGE_NAME }
                 dir(env.APP_DIR) {
                     sh 'npm pack'
                 }
                 // The fingerprint (MD5) lets anyone trace this exact tarball to this build and commit.
                 archiveArtifacts artifacts: "${env.APP_DIR}/*.tgz", fingerprint: true, allowEmptyArchive: false
             }
+            post { failure { script { env.FAILED_STAGE = env.STAGE_NAME } } }
         }
 
         stage('Publish') {
             steps {
-                script { env.LAST_STAGE = env.STAGE_NAME }
                 dir(env.APP_DIR) {
                     withCredentials([usernamePassword(credentialsId: env.NEXUS_CREDENTIALS_ID,
                                                       usernameVariable: 'NEXUS_USER',
@@ -115,6 +115,7 @@ pipeline {
                     }
                 }
             }
+            post { failure { script { env.FAILED_STAGE = env.STAGE_NAME } } }
         }
     }
 
@@ -128,7 +129,7 @@ pipeline {
             echo "Artifact URL: ${env.NEXUS_URL}/repository/${env.NEXUS_REPO}/${env.PACKAGE_NAME}/-/${env.PACKAGE_NAME}-${env.ARTIFACT_VERSION}.tgz"
         }
         failure {
-            echo "NOTIFY team: ${env.JOB_NAME} #${env.BUILD_NUMBER} FAILED in stage '${env.LAST_STAGE}' " +
+            echo "NOTIFY team: ${env.JOB_NAME} #${env.BUILD_NUMBER} FAILED in stage '${env.FAILED_STAGE ?: 'Checkout'}' " +
                  "(commit ${env.GIT_COMMIT?.take(7)}). Nothing was published. Log: ${env.BUILD_URL}console"
         }
         changed {
