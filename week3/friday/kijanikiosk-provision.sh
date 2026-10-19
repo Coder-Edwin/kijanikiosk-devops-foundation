@@ -274,7 +274,7 @@ fi
 
 missing=()
 for p in "${BASE_PACKAGES[@]}"; do
-  if dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q 'install ok installed'; then
+  if [[ "$(dpkg-query -W -f='${db:Status-Status}' "$p" 2>/dev/null || true)" == installed ]]; then
     ok "Already installed: ${p}"
   else
     missing+=("$p")
@@ -290,8 +290,10 @@ mismatch=0
 for p in "${!PINS[@]}"; do
   want="${PINS[$p]}"
   have="$(dpkg-query -W -f='${Version}' "$p" 2>/dev/null || true)"
-  status="$(dpkg-query -W -f='${Status}' "$p" 2>/dev/null || true)"
-  if [[ "$status" != *"install ok installed"* ]]; then
+  status="$(dpkg-query -W -f='${db:Status-Status}' "$p" 2>/dev/null || true)"
+  # db:Status-Status is "installed" whether or not the package is on hold
+  # (the full Status reads "hold ok installed" for a held package).
+  if [[ "$status" != installed ]]; then
     log "Not installed: ${p}; installing pinned version ${want}"
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --allow-change-held-packages "${p}=${want}"
     changed "Installed ${p}=${want}"
@@ -339,22 +341,24 @@ for u in "${KK_SERVICES[@]}"; do
     changed "Created service account ${u} (UID $(id -u "$u"))"
   else
     log "Already exists: ${u} (UID $(id -u "$u")); comparing its parameters with the spec (D1)"
-    # usermod refuses some changes while the account runs processes (e.g. a
-    # unit left over from Wednesday). Stop it first; Phase 6 starts it again.
-    if pgrep -u "$u" >/dev/null 2>&1; then
-      systemctl stop "${u}.service" 2>/dev/null || true
-      pkill -u "$u" 2>/dev/null || true
-      found "${u} had running processes: stopped before changing the account"
-    fi
     IFS=: read -r _ _ _ gid _ home shell < <(getent passwd "$u")
     want_gid="$(getent group "$u" | cut -d: -f3)"
+    groups_now="$(id -nG "$u" | tr ' ' '\n' | grep -vx "$u" | sort | tr '\n' ' ' | sed 's/ $//' || true)"
+    # usermod refuses some changes while the account runs processes (e.g. a
+    # unit left over from Wednesday). Only if something must change, stop it
+    # first; Phase 6 starts it again.
+    if [[ "$shell" != "$NOLOGIN" || "$home" != /nonexistent || "$gid" != "$want_gid" || "$groups_now" != "$KK_GROUP" ]] \
+       && pgrep -u "$u" >/dev/null 2>&1; then
+      systemctl stop "${u}.service" 2>/dev/null || true
+      pkill -u "$u" 2>/dev/null || true
+      found "${u} has drift and running processes: stopped before changing the account"
+    fi
     if [[ "$shell" != "$NOLOGIN" ]]; then
       found "${u} has login shell ${shell}"; usermod --shell "$NOLOGIN" "$u"; changed "${u} shell -> ${NOLOGIN}"; fi
     if [[ "$home" != /nonexistent ]]; then
       found "${u} has home ${home}"; usermod --home /nonexistent "$u"; changed "${u} home -> /nonexistent (old directory left untouched)"; fi
     if [[ "$gid" != "$want_gid" ]]; then
       found "${u} primary GID ${gid}, expected ${want_gid} (${u})"; usermod --gid "$u" "$u"; changed "${u} primary group -> ${u}"; fi
-    groups_now="$(id -nG "$u" | tr ' ' '\n' | grep -vx "$u" | sort | tr '\n' ' ' | sed 's/ $//' || true)"
     if [[ "$groups_now" != "$KK_GROUP" ]]; then
       found "${u} supplementary groups '${groups_now}', expected '${KK_GROUP}'"
       usermod --groups "$KK_GROUP" "$u"; changed "${u} supplementary groups -> ${KK_GROUP}"
@@ -712,7 +716,7 @@ for s in "${KK_SERVICES[@]}"; do
   printf '%s provisioning run %s: rotation test marker\n' "$(ts)" "$RUN_ID" >> "${KK_LOGS}/${s}.log"
 done
 logrotate --force "$LOGROTATE_CONF"
-changed "Forced a rotation of the three service logs (services try-restarted by postrotate)"
+log "Rotation test (every run, by design): forced a rotation of the three service logs; postrotate try-restarted the services"
 for s in "${KK_SERVICES[@]}"; do
   f="${KK_LOGS}/${s}.log"
   log "After rotation: $(stat -c '%A %U:%G' "$f") ${f}; ACL: $(getfacl --omit-header --absolute-names "$f" 2>/dev/null | grep -E '^user:kk-' | tr '\n' ' ' || true)"
@@ -743,7 +747,7 @@ for p in "${!PINS[@]}"; do
   check 2 "${p} is on hold" bash -c "apt-mark showhold | grep -qx '$p'"
 done
 for p in "${BASE_PACKAGES[@]}"; do
-  check 2 "${p} installed" bash -c "dpkg-query -W -f='\${Status}' '$p' | grep -q 'install ok installed'"
+  check 2 "${p} installed" test "$(dpkg-query -W -f='${db:Status-Status}' "$p" 2>/dev/null)" = installed
 done
 
 # -- Phase 3 checks
