@@ -1,0 +1,251 @@
+# KijaniKiosk provisioning run (dirty VM)  host=edu-vanquiz-VMware-Virtual-Platform  started=2026-10-19T15:29:02+03:00
+# command: sudo ./kijanikiosk-provision.sh
+
+[2026-10-19T15:29:02+03:00] ================ PHASE 1: Pre-flight and dirty-state detection ================
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Run ID 20261019T152902; backups for anything replaced go to /var/backups/kijanikiosk/20261019T152902
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Operator account (read access to health and logs): edu-vanquiz
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Already exists: kk-api (uid=997(kk-api) gid=983(kk-api) groups=983(kk-api),1001(kijanikiosk); shell /bin/bash)
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Already exists: kk-payments (uid=995(kk-payments) gid=982(kk-payments) groups=982(kk-payments); shell /usr/sbin/nologin)
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Already exists: kk-logs (uid=994(kk-logs) gid=981(kk-logs) groups=981(kk-logs),4(adm),1001(kijanikiosk); shell /usr/sbin/nologin)
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Already exists: /opt/kijanikiosk
+[2026-10-19T15:29:02+03:00] [PHASE 1] FOUND Legacy config directory present: /etc/kijanikiosk (Challenge A)
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Existing logrotate config: /etc/logrotate.d/kijanikiosk
+[2026-10-19T15:29:02+03:00] [PHASE 1] INFO  Package holds present: curl 
+[2026-10-19T15:29:03+03:00] [PHASE 1] INFO  ufw is active with 13 rule(s) inherited
+[2026-10-19T15:29:03+03:00] [PHASE 1] INFO  Existing unit file: kk-api.service
+[2026-10-19T15:29:03+03:00] [PHASE 1] FOUND Drop-in override directory: kk-api.service.d
+[2026-10-19T15:29:03+03:00] [PHASE 1] INFO  Existing unit file: kk-payments.service
+[2026-10-19T15:29:03+03:00] [PHASE 1] INFO  Existing unit file: kk-logs.service
+
+[2026-10-19T15:29:03+03:00] ================ PHASE 2: Packages and version pins ================
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    apt package index is less than a day old: not refreshed
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Already installed: acl
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Already installed: ufw
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Already installed: logrotate
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Already installed: python3
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Already at pinned version: nginx 1.24.0-2ubuntu7.18 (install skipped)
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Already at pinned version: curl 8.5.0-2ubuntu10.16 (install skipped)
+[2026-10-19T15:29:03+03:00] [PHASE 2] FOUND Hold missing on pinned package nginx (lost or never set)
+[2026-10-19T15:29:03+03:00] [PHASE 2] FIX   apt-mark hold nginx
+[2026-10-19T15:29:03+03:00] [PHASE 2] OK    Hold already set: curl
+
+[2026-10-19T15:29:03+03:00] ================ PHASE 3: Service accounts and groups ================
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    Already exists: group kijanikiosk (GID 1001)
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    Already exists: group kk-api (GID 983)
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    Already exists: group kk-payments (GID 982)
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    Already exists: group kk-logs (GID 981)
+[2026-10-19T15:29:03+03:00] [PHASE 3] INFO  Already exists: kk-api (UID 997); comparing its parameters with the spec (D1)
+[2026-10-19T15:29:03+03:00] [PHASE 3] FOUND kk-api has login shell /bin/bash
+[2026-10-19T15:29:03+03:00] [PHASE 3] FIX   kk-api shell -> /usr/sbin/nologin
+[2026-10-19T15:29:03+03:00] [PHASE 3] FOUND kk-api has home /home/kk-api
+[2026-10-19T15:29:03+03:00] [PHASE 3] FIX   kk-api home -> /nonexistent (old directory left untouched)
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    kk-api: password locked, shell /usr/sbin/nologin, groups kk-api + kijanikiosk
+[2026-10-19T15:29:03+03:00] [PHASE 3] INFO  Already exists: kk-payments (UID 995); comparing its parameters with the spec (D1)
+[2026-10-19T15:29:03+03:00] [PHASE 3] FOUND kk-payments has home /home/kk-payments
+[2026-10-19T15:29:03+03:00] [PHASE 3] FIX   kk-payments home -> /nonexistent (old directory left untouched)
+[2026-10-19T15:29:03+03:00] [PHASE 3] FOUND kk-payments supplementary groups '', expected 'kijanikiosk'
+[2026-10-19T15:29:03+03:00] [PHASE 3] FIX   kk-payments supplementary groups -> kijanikiosk
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    kk-payments: password locked, shell /usr/sbin/nologin, groups kk-payments + kijanikiosk
+[2026-10-19T15:29:03+03:00] [PHASE 3] INFO  Already exists: kk-logs (UID 994); comparing its parameters with the spec (D1)
+[2026-10-19T15:29:03+03:00] [PHASE 3] FOUND kk-logs supplementary groups 'adm kijanikiosk', expected 'kijanikiosk'
+[2026-10-19T15:29:03+03:00] [PHASE 3] FIX   kk-logs supplementary groups -> kijanikiosk
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    kk-logs: password locked, shell /usr/sbin/nologin, groups kk-logs + kijanikiosk
+[2026-10-19T15:29:03+03:00] [PHASE 3] OK    Operator edu-vanquiz already in kijanikiosk
+
+[2026-10-19T15:29:03+03:00] ================ PHASE 4: Directories, configuration and the access model ================
+[2026-10-19T15:29:03+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk
+[2026-10-19T15:29:03+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/config
+[2026-10-19T15:29:03+03:00] [PHASE 4] FOUND /opt/kijanikiosk/config has mode 777, expected 0750
+[2026-10-19T15:29:03+03:00] [PHASE 4] FIX   chmod 0750 /opt/kijanikiosk/config
+[2026-10-19T15:29:03+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/shared
+[2026-10-19T15:29:03+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/shared/logs
+[2026-10-19T15:29:03+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/health
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/api
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/api/app
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/api/data
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/payments
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/payments/app
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/payments/data
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/logs
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/logs/app
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: directory /opt/kijanikiosk/logs/data
+[2026-10-19T15:29:04+03:00] [PHASE 4] FOUND ACL drift on /opt/kijanikiosk/shared/logs:
+        1a2
+        > user:995:r-x
+        5a7,12
+        > default:user::rwx
+        > default:user:995:r-x
+        > default:user:997:rwx
+        > default:group::r-x
+        > default:mask::rwx
+        > default:other::---
+[2026-10-19T15:29:04+03:00] [PHASE 4] FIX   ACL reset to access model: /opt/kijanikiosk/shared/logs
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    ACL matches access model: /opt/kijanikiosk/health
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    ACL matches access model: /opt/kijanikiosk/config
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    ACL matches access model: /opt/kijanikiosk
+[2026-10-19T15:29:04+03:00] [PHASE 4] FOUND Legacy config in /etc/kijanikiosk: /etc/kijanikiosk/payments-api.env 
+[2026-10-19T15:29:04+03:00] [PHASE 4] INFO  Backed up /etc/kijanikiosk -> /var/backups/kijanikiosk/20261019T152902/etc/kijanikiosk
+[2026-10-19T15:29:04+03:00] [PHASE 4] FIX   Removed /etc/kijanikiosk; the single config source is /opt/kijanikiosk/config
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Unchanged: kk-api environment file (/opt/kijanikiosk/config/api.env)
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Unchanged: kk-payments environment file (/opt/kijanikiosk/config/payments-api.env)
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Unchanged: kk-logs environment file (/opt/kijanikiosk/config/logs.env)
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Unchanged: kk-api placeholder page (/opt/kijanikiosk/api/app/index.html)
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Unchanged: kk-payments placeholder page (/opt/kijanikiosk/payments/app/index.html)
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Unchanged: kk-logs placeholder page (/opt/kijanikiosk/logs/app/index.html)
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: /opt/kijanikiosk/shared/logs/kk-api.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] FOUND /opt/kijanikiosk/shared/logs/kk-api.log owned by root:root, expected kk-logs:kijanikiosk
+[2026-10-19T15:29:04+03:00] [PHASE 4] FIX   chown kk-logs:kijanikiosk /opt/kijanikiosk/shared/logs/kk-api.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] FOUND /opt/kijanikiosk/shared/logs/kk-api.log has mode 644, expected 0660
+[2026-10-19T15:29:04+03:00] [PHASE 4] FIX   chmod 0660 /opt/kijanikiosk/shared/logs/kk-api.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    ACL matches access model: /opt/kijanikiosk/shared/logs/kk-api.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: /opt/kijanikiosk/shared/logs/kk-payments.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    ACL matches access model: /opt/kijanikiosk/shared/logs/kk-payments.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    Already exists: /opt/kijanikiosk/shared/logs/kk-logs.log
+[2026-10-19T15:29:04+03:00] [PHASE 4] OK    ACL matches access model: /opt/kijanikiosk/shared/logs/kk-logs.log
+
+[2026-10-19T15:29:04+03:00] ================ PHASE 5: Firewall: express intent, not history ================
+[2026-10-19T15:29:04+03:00] [PHASE 5] FOUND ufw ruleset drifted from the last applied intent (D4)
+        inherited: Status: active
+        inherited: 
+        inherited:      To                         Action      From
+        inherited:      --                         ------      ----
+        inherited: [ 1] 3001/tcp on lo             ALLOW IN    Anywhere                   # kk-payments: loopback only, for nginx proxying
+        inherited: [ 2] 3001/tcp                   ALLOW IN    10.0.1.0/24                # kk-payments health check from monitoring subnet
+        inherited: [ 3] 3001/tcp                   DENY IN     Anywhere                   # kk-payments internal port: block every other source
+        inherited: [ 4] 22/tcp                     ALLOW IN    10.0.1.0/24                # SSH from monitoring/admin subnet only
+        inherited: [ 5] 80/tcp                     ALLOW IN    10.0.1.0/24                # HTTP (nginx) from monitoring subnet only
+        inherited: [ 6] 22/tcp                     ALLOW IN    Anywhere                  
+        inherited: [ 7] 80/tcp                     ALLOW IN    Anywhere                  
+        inherited: [ 8] 3001                       DENY IN     Anywhere                  
+        inherited: [ 9] 3001/tcp (v6) on lo        ALLOW IN    Anywhere (v6)              # kk-payments: loopback only, for nginx proxying
+        inherited: [10] 3001/tcp (v6)              DENY IN     Anywhere (v6)              # kk-payments internal port: block every other source
+        inherited: [11] 22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+        inherited: [12] 80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+        inherited: [13] 3001 (v6)                  DENY IN     Anywhere (v6)             
+        inherited: 
+[2026-10-19T15:29:06+03:00] [PHASE 5] FIX   ufw reset to a clean baseline (old rules saved under /var/backups/kijanikiosk/20261019T152902/ufw)
+[2026-10-19T15:29:06+03:00] [PHASE 5] FIX   ufw allow in on lo to any port 3001 proto tcp comment 'kk-payments: loopback only, for nginx proxying'
+[2026-10-19T15:29:06+03:00] [PHASE 5] FIX   ufw allow from 10.0.1.0/24 to any port 3001 proto tcp comment 'kk-payments health check from monitoring subnet'
+[2026-10-19T15:29:06+03:00] [PHASE 5] FIX   ufw deny 3001/tcp comment 'kk-payments internal port: block every other source'
+[2026-10-19T15:29:06+03:00] [PHASE 5] FIX   ufw allow from 10.0.1.0/24 to any port 22 proto tcp comment 'SSH from monitoring/admin subnet only'
+[2026-10-19T15:29:06+03:00] [PHASE 5] FIX   ufw allow from 10.0.1.0/24 to any port 80 proto tcp comment 'HTTP (nginx) from monitoring subnet only'
+[2026-10-19T15:29:08+03:00] [PHASE 5] FIX   ufw enabled; intent fingerprint recorded in /var/lib/kijanikiosk/ufw.intent
+
+[2026-10-19T15:29:08+03:00] ================ PHASE 6: systemd units (written inline) and nginx ================
+[2026-10-19T15:29:08+03:00] [PHASE 6] FOUND Drop-in overrides for kk-api would change its hardening: /etc/systemd/system/kk-api.service.d/override.conf  (D6)
+[2026-10-19T15:29:08+03:00] [PHASE 6] INFO  Backed up /etc/systemd/system/kk-api.service.d -> /var/backups/kijanikiosk/20261019T152902/etc/systemd/system/kk-api.service.d
+[2026-10-19T15:29:08+03:00] [PHASE 6] FIX   Removed /etc/systemd/system/kk-api.service.d
+[2026-10-19T15:29:08+03:00] [PHASE 6] FOUND Drift: kk-api unit file differs from the spec (/etc/systemd/system/kk-api.service)
+[2026-10-19T15:29:08+03:00] [PHASE 6] INFO  Backed up /etc/systemd/system/kk-api.service -> /var/backups/kijanikiosk/20261019T152902/etc/systemd/system/kk-api.service
+[2026-10-19T15:29:08+03:00] [PHASE 6] FIX   Wrote kk-api unit file (/etc/systemd/system/kk-api.service)
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    Unchanged: kk-payments unit file (/etc/systemd/system/kk-payments.service)
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    Unchanged: kk-logs unit file (/etc/systemd/system/kk-logs.service)
+[2026-10-19T15:29:08+03:00] [PHASE 6] FIX   systemd daemon-reload (changed: kk-api kk-api)
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    Already enabled: kk-api
+[2026-10-19T15:29:08+03:00] [PHASE 6] FIX   Restarted kk-api (unit or environment changed)
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    Already enabled: kk-payments
+[2026-10-19T15:29:08+03:00] [PHASE 6] FIX   Started kk-payments
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    Already enabled: kk-logs
+[2026-10-19T15:29:08+03:00] [PHASE 6] FIX   Started kk-logs
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    Unchanged: nginx site (/etc/nginx/sites-available/kijanikiosk)
+[2026-10-19T15:29:08+03:00] [PHASE 6] OK    nginx config unchanged
+
+[2026-10-19T15:29:08+03:00] ================ PHASE 7: Journal persistence and log rotation ================
+[2026-10-19T15:29:08+03:00] [PHASE 7] OK    Unchanged: journald drop-in (/etc/systemd/journald.conf.d/kijanikiosk.conf)
+[2026-10-19T15:29:08+03:00] [PHASE 7] OK    Journal already persistent and capped at 500M
+[2026-10-19T15:29:08+03:00] [PHASE 7] FOUND Drift: logrotate config differs from the spec (/etc/logrotate.d/kijanikiosk)
+[2026-10-19T15:29:08+03:00] [PHASE 7] INFO  Backed up /etc/logrotate.d/kijanikiosk -> /var/backups/kijanikiosk/20261019T152902/etc/logrotate.d/kijanikiosk
+[2026-10-19T15:29:08+03:00] [PHASE 7] FIX   Wrote logrotate config (/etc/logrotate.d/kijanikiosk)
+[2026-10-19T15:29:08+03:00] [PHASE 7] OK    logrotate --debug passed (output in /var/lib/kijanikiosk/logrotate-debug.txt)
+[2026-10-19T15:29:08+03:00] [PHASE 7] INFO  Rotation test (every run, by design): forced a rotation of the three service logs; postrotate try-restarted the services
+[2026-10-19T15:29:09+03:00] [PHASE 7] INFO  After rotation: -rw-rw---- kk-logs:kijanikiosk /opt/kijanikiosk/shared/logs/kk-api.log; ACL: user:kk-payments:r-x	#effective:r-- user:kk-api:rwx	#effective:rw- 
+[2026-10-19T15:29:09+03:00] [PHASE 7] INFO  After rotation: -rw-rw---- kk-logs:kijanikiosk /opt/kijanikiosk/shared/logs/kk-payments.log; ACL: user:kk-payments:r-x	#effective:r-- user:kk-api:rwx	#effective:rw- 
+[2026-10-19T15:29:09+03:00] [PHASE 7] INFO  After rotation: -rw-rw---- kk-logs:kijanikiosk /opt/kijanikiosk/shared/logs/kk-logs.log; ACL: user:kk-payments:r-x	#effective:r-- user:kk-api:rwx	#effective:rw- 
+
+[2026-10-19T15:29:09+03:00] ================ PHASE 8: Health checks and final verification ================
+[2026-10-19T15:29:09+03:00] [PHASE 8] INFO  Health check written: {"timestamp":"2026-10-19T15:29:09+03:00","run_id":"20261019T152902","kk-api":"ok","kk-payments":"ok","kk-logs":"ok"}
+
+[2026-10-19T15:29:09+03:00] [PHASE 8] INFO  Running every verification check (PASS/FAIL per check)
+  PASS  [P2] nginx installed at pinned version 1.24.0-2ubuntu7.18
+  PASS  [P2] nginx is on hold
+  PASS  [P2] curl installed at pinned version 8.5.0-2ubuntu10.16
+  PASS  [P2] curl is on hold
+  PASS  [P2] acl installed
+  PASS  [P2] ufw installed
+  PASS  [P2] logrotate installed
+  PASS  [P2] python3 installed
+  PASS  [P3] kk-api exists with shell /usr/sbin/nologin
+  PASS  [P3] kk-api primary group is kk-api
+  PASS  [P3] kk-api supplementary groups are exactly kijanikiosk
+  PASS  [P3] kk-api password is locked
+  PASS  [P3] kk-payments exists with shell /usr/sbin/nologin
+  PASS  [P3] kk-payments primary group is kk-payments
+  PASS  [P3] kk-payments supplementary groups are exactly kijanikiosk
+  PASS  [P3] kk-payments password is locked
+  PASS  [P3] kk-logs exists with shell /usr/sbin/nologin
+  PASS  [P3] kk-logs primary group is kk-logs
+  PASS  [P3] kk-logs supplementary groups are exactly kijanikiosk
+  PASS  [P3] kk-logs password is locked
+  PASS  [P4] /opt/kijanikiosk is root:kijanikiosk 750
+  PASS  [P4] /opt/kijanikiosk/config is root:kijanikiosk 750
+  PASS  [P4] /opt/kijanikiosk/shared/logs owned kk-logs:kijanikiosk, setgid
+  PASS  [P4] /opt/kijanikiosk/shared/logs ACL grants kk-api rwx
+  PASS  [P4] /opt/kijanikiosk/shared/logs ACL grants kk-payments read only
+  PASS  [P4] /opt/kijanikiosk/shared/logs default ACL present for new files
+  PASS  [P4] /opt/kijanikiosk/health default ACL gives the group read
+  PASS  [P4] No legacy config under /etc/kijanikiosk
+  PASS  [P4] kk-api can read its EnvironmentFile /opt/kijanikiosk/config/api.env
+  PASS  [P4] kk-payments can read its EnvironmentFile /opt/kijanikiosk/config/payments-api.env
+  PASS  [P4] kk-logs can read its EnvironmentFile /opt/kijanikiosk/config/logs.env
+  PASS  [P4] kk-api cannot read the payments EnvironmentFile
+  PASS  [P5] ufw is active
+  PASS  [P5] default policy: deny incoming
+  PASS  [P5] 3001/tcp allowed on loopback (nginx proxy)
+  PASS  [P5] 3001/tcp allowed from 10.0.1.0/24
+  PASS  [P5] 3001/tcp denied from everywhere else
+  PASS  [P5] 22/tcp allowed from 10.0.1.0/24 only
+  PASS  [P5] 80/tcp allowed from 10.0.1.0/24 only
+  PASS  [P5] no SSH or HTTP rule open to Anywhere
+  PASS  [P5] every ufw rule carries a comment
+  PASS  [P5] loopback allow is evaluated before the 3001 deny
+  PASS  [P5] monitoring allow is evaluated before the 3001 deny
+  PASS  [P6] kk-api is enabled
+  PASS  [P6] kk-api is active
+  PASS  [P6] kk-api has no drop-in overrides
+  PASS  [P6] kk-payments is enabled
+  PASS  [P6] kk-payments is active
+  PASS  [P6] kk-payments has no drop-in overrides
+  PASS  [P6] kk-logs is enabled
+  PASS  [P6] kk-logs is active
+  PASS  [P6] kk-logs has no drop-in overrides
+  PASS  [P6] kk-payments: After=kk-api.service
+  PASS  [P6] kk-payments: Wants=kk-api.service
+  PASS  [P6] kk-api exposure 1.1 is below 3.5
+  PASS  [P6] kk-payments exposure 1.2 is below 2.5
+  PASS  [P6] kk-logs exposure 1.1 is below 3.5
+  PASS  [P6] nginx configuration is valid
+  PASS  [P6] nginx is active
+  PASS  [P6] nginx proxies to kk-payments over loopback
+  PASS  [P7] journal storage is persistent
+  PASS  [P7] journal capped at 500M
+  PASS  [P7] logrotate --debug passes
+  PASS  [P7] kk-api.log after rotation is kk-logs:kijanikiosk 660
+  PASS  [P7] kk-api.log after rotation: kk-api effective rw
+  PASS  [P7] kk-payments.log after rotation is kk-logs:kijanikiosk 660
+  PASS  [P7] kk-payments.log after rotation: kk-api effective rw
+  PASS  [P7] kk-logs.log after rotation is kk-logs:kijanikiosk 660
+  PASS  [P7] kk-logs.log after rotation: kk-api effective rw
+  PASS  [P7] kk-api can write in shared/logs after rotation
+  PASS  [P7] kk-payments can read kk-api.log after rotation
+  PASS  [P8] health file exists
+  PASS  [P8] health file is valid JSON
+  PASS  [P8] health file is kk-logs:kijanikiosk 640
+  PASS  [P8] operator edu-vanquiz can read the health file without sudo
+  PASS  [P8] kk-api port 3000 listening
+  PASS  [P8] kk-payments port 3001 listening
+  PASS  [P8] kk-logs port 3002 listening
+
+[2026-10-19T15:29:11+03:00] ================ VERIFICATION SUMMARY ================
+Passed: 78   Failed: 0
+All checks passed. Server converged to the KijaniKiosk production foundation.
+# finished=2026-10-19T15:29:11+03:00  EXIT CODE: 0
