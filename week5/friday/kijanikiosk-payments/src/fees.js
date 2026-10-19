@@ -17,7 +17,6 @@ const FEE_BANDS = [
 ];
 const MIN_AMOUNT = 1;
 const MAX_AMOUNT = 250000;
-const LOYALTY_DISCOUNT = 0.05;
 
 function calculateFee(amount) {
   if (!Number.isInteger(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
