@@ -14,7 +14,7 @@ SUMMARY="${HERE}/evidence/fault-drill-summary.txt"
 mkdir -p "${HERE}/evidence"
 
 CJ="$(mktemp)"; trap 'rm -f "$CJ"' EXIT
-AUTH=(-u "admin:$(cat "$PW_FILE")" -b "$CJ" -c "$CJ")
+AUTH=(-g -u "admin:$(cat "$PW_FILE")" -b "$CJ" -c "$CJ")
 api() { curl -sf "${AUTH[@]}" "$@"; }
 pyget() { python3 -c "import json,sys; d=json.load(sys.stdin); print($1)"; }
 
