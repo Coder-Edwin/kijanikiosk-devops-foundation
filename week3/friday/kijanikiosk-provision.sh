@@ -85,7 +85,7 @@ declare -A SVC_ENVFILE=([kk-api]=api.env [kk-payments]=payments-api.env [kk-logs
 # on a server: the pin is part of the reviewed spec.
 declare -A PINS=(
   [nginx]="${KK_PIN_NGINX:-1.24.0-2ubuntu7.7}"
-  [curl]="${KK_PIN_CURL:-8.5.0-2ubuntu10.9}"
+  [curl]="${KK_PIN_CURL:-8.5.0-2ubuntu10.16}"
 )
 readonly BASE_PACKAGES=(acl ufw logrotate python3)
 

@@ -8,6 +8,11 @@ set -euo pipefail
 [[ $EUID -eq 0 ]] || { echo "Run with sudo"; exit 2; }
 echo "Simulating Tuesday-Thursday hand-made state..."
 
+# The tools the hand-made state needs (a fresh desktop install may lack them).
+for p in acl ufw; do
+  dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q 'install ok installed' || apt-get install -y -qq "$p"
+done
+
 # D1: accounts created by hand with the wrong parameters
 getent group kijanikiosk >/dev/null || groupadd kijanikiosk
 id kk-api &>/dev/null      || useradd --system --shell /bin/bash --create-home kk-api        # login shell + home
