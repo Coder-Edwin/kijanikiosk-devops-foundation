@@ -20,7 +20,24 @@
 #
 # -----------------------------------------------------------------------------
 # Expected dirty conditions found in pre-provisioning audit
-# (the six conditions from the brief; each one has a named handling block)
+# (VM edu-vanquiz-VMware-Virtual-Platform, 2026-10-19; the VM had been rebuilt,
+#  so the hand-made state was recreated with tools/simulate-dirty-state.sh as
+#  the brief allows. Full output: pre-provisioning-audit.txt)
+# - D1: kk-api already exists (UID 997, login shell /bin/bash, home /home/kk-api): handled in Phase 3 by id check, parameters converged with usermod
+# - D1: kk-payments already exists (UID 995, home /home/kk-payments): handled in Phase 3 by id check, parameters converged with usermod
+# - D1: kk-logs already exists (UID 994, home /home/kk-logs): handled in Phase 3 by id check, parameters converged with usermod
+# - D2: /opt/kijanikiosk/config is 777 root:root (spec 750 root:kijanikiosk): fixed in Phase 4
+# - D2: /opt/kijanikiosk/shared/logs ACL has no kk-payments entry: fixed in Phase 4
+# - D2: /opt/kijanikiosk/shared/logs has no default ACL, so new files (logrotate) would not inherit access: fixed in Phase 4
+# - D3: hand-edited /etc/logrotate.d/kijanikiosk present: compared, backed up and replaced in Phase 7
+# - D4: ufw active with 6 hand-made rule(s) (some without comments): reset to baseline and rebuilt from intent in Phase 5
+# - D5: package holds present (curl): versions compared with pins in Phase 2, holds re-asserted
+# - D5: curl installed at 8.5.0-2ubuntu10.16: compared with the pin before any install (Phase 2)
+# - D6: kk-api.service exists from an earlier lab: compared with the inline unit, replaced if different (Phase 6)
+# - D6: kk-api.service.d drop-in overrides present: backed up and removed (Phase 6)
+# - Challenge A: config files under /etc/kijanikiosk: backed up and removed, single source is /opt/kijanikiosk/config (Phase 4)
+#
+# How each of the brief's six conditions is handled in general
 #
 # D1 Service accounts created by hand on Tuesday, possibly with a login shell,
 #    a home directory or the wrong groups
@@ -84,7 +101,7 @@ declare -A SVC_ENVFILE=([kk-api]=api.env [kk-payments]=payments-api.env [kk-logs
 # Pinned packages (Challenge D). Override per environment, never edit in place
 # on a server: the pin is part of the reviewed spec.
 declare -A PINS=(
-  [nginx]="${KK_PIN_NGINX:-1.24.0-2ubuntu7.7}"
+  [nginx]="${KK_PIN_NGINX:-1.24.0-2ubuntu7.18}"
   [curl]="${KK_PIN_CURL:-8.5.0-2ubuntu10.16}"
 )
 readonly BASE_PACKAGES=(acl ufw logrotate python3)
