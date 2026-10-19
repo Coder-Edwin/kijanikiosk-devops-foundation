@@ -44,7 +44,6 @@ pipeline {
             steps {
                 script { env.LAST_STAGE = env.STAGE_NAME }
                 dir(env.APP_DIR) {
-                    sh 'npm run build'
                     script {
                         // <semver>-<git-sha>: every artifact traces back to exactly one commit.
                         def base = sh(returnStdout: true, script: "node -p \"require('./package.json').version\"").trim()
@@ -53,7 +52,9 @@ pipeline {
                         env.ARTIFACT_VERSION = "${base}-${sha}"
                         env.PACKAGE_NAME = sh(returnStdout: true, script: "node -p \"require('./package.json').name\"").trim()
                     }
+                    // Stamp the version first so the build output records exactly what it is.
                     sh 'npm version "$ARTIFACT_VERSION" --no-git-tag-version'
+                    sh 'npm run build'
                     echo "Artifact version: ${env.PACKAGE_NAME}@${env.ARTIFACT_VERSION}"
                 }
             }

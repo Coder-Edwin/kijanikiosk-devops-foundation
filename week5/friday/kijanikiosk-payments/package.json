@@ -1,0 +1,25 @@
+{
+  "name": "kijanikiosk-payments",
+  "version": "1.0.0",
+  "description": "KijaniKiosk payments service: M-Pesa phone validation, fee calculation and payment intake API",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "build": "node scripts/build.js",
+    "test": "mkdir -p reports && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=reports/junit.xml test/*.test.js",
+    "start": "node dist/server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "eslint": "10.1.0"
+  },
+  "overrides": {
+    "minimatch": "10.2.4"
+  }
+}
