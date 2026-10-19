@@ -91,7 +91,7 @@ pipeline {
                     sh 'npm pack'
                 }
                 // The fingerprint (MD5) lets anyone trace this exact tarball to this build and commit.
-                archiveArtifacts artifacts: "${env.APP_DIR}/*.tgz", fingerprint: true, allowEmptyArchive: false
+                archiveArtifacts artifacts: "${env.APP_DIR}/dist/*.tgz", fingerprint: true, allowEmptyArchive: false
             }
         }
 
