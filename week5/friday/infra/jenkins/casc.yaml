@@ -32,6 +32,11 @@ jobs:
   - script: |
       pipelineJob('kijanikiosk-ci') {
         description('KijaniKiosk payments CI: Lint, Build, Verify (Test + Security Audit), Archive, Publish to Nexus.')
+        parameters {
+          // Default: the feature branch tip. The fault drill passes a specific commit SHA instead.
+          // (^$ stops config-as-code from expanding the variable itself.)
+          stringParam('GIT_REF', '*/feature/week5-ci-pipeline', 'Branch spec or commit SHA to build')
+        }
         properties {
           pipelineTriggers {
             triggers {
@@ -44,11 +49,11 @@ jobs:
             scm {
               git {
                 remote { url('https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git') }
-                branch('*/feature/week5-ci-pipeline')
+                branch('^${GIT_REF}')
               }
             }
             scriptPath('Jenkinsfile')
-            lightweight(true)
+            lightweight(false)   // a full checkout is needed to load the Jenkinsfile from a specific SHA
           }
         }
       }
