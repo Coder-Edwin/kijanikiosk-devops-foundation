@@ -1,0 +1,48 @@
+# KijaniKiosk CI stack: Jenkins controller + Nexus Repository, on the Ubuntu VM.
+# Start with ../tools/setup-ci-stack.sh (it creates the secrets this file reads).
+name: kijanikiosk-ci
+
+services:
+  jenkins:
+    build: ./jenkins
+    image: kijanikiosk/jenkins:2.580.1-lts-jdk21
+    container_name: kk-jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    # Lets the controller start Docker agents through the host's Docker daemon.
+    group_add:
+      - "${DOCKER_GID:?run tools/setup-ci-stack.sh first}"
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      CASC_JENKINS_CONFIG: /casc/casc.yaml
+    # Passwords arrive as files under /run/secrets, never as environment
+    # variables, so they cannot leak into build environments.
+    secrets:
+      - jenkins_admin_password
+      - nexus_ci_password
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins/casc.yaml:/casc/casc.yaml:ro
+
+  nexus:
+    image: sonatype/nexus3:3.97.0
+    container_name: kk-nexus
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      INSTALL4J_ADD_VM_PARAMS: "-Xms1g -Xmx1g -XX:MaxDirectMemorySize=1g"
+    volumes:
+      - nexus_data:/nexus-data
+
+secrets:
+  jenkins_admin_password:
+    file: ./secrets/jenkins_admin_password
+  nexus_ci_password:
+    file: ./secrets/nexus_ci_password
+
+volumes:
+  jenkins_home:
+  nexus_data:

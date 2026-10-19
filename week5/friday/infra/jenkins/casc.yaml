@@ -1,0 +1,54 @@
+# Jenkins configuration as code. Values like ${nexus_ci_password} are read
+# from files in /run/secrets (Docker secrets), never from this repository.
+jenkins:
+  systemMessage: "KijaniKiosk CI. Configured as code from week5/friday/infra."
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: "${jenkins_admin_password}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: nexus-ci-publisher
+              description: "Nexus npm publisher: may add to npm-kijanikiosk only"
+              username: ci-publisher
+              password: "${nexus_ci_password}"
+
+unclassified:
+  location:
+    url: "http://localhost:8080/"
+
+jobs:
+  - script: |
+      pipelineJob('kijanikiosk-ci') {
+        description('KijaniKiosk payments CI: Lint, Build, Verify (Test + Security Audit), Archive, Publish to Nexus.')
+        properties {
+          pipelineTriggers {
+            triggers {
+              pollSCM { scmpoll_spec('H/2 * * * *') }
+            }
+          }
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git') }
+                branch('*/feature/week5-ci-pipeline')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }
