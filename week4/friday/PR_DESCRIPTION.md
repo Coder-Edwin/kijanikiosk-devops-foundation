@@ -23,7 +23,3 @@ This PR adds `week4/friday/`, a pipeline in which Terraform provisions three Ubu
 | `pipeline.sh` | apply / destroy; exits non-zero on any Terraform or Ansible failure |
 | `pipeline-run1.log`, `pipeline-run2.log`, `destroy-output.txt` | evidence |
 | `hardening-decisions.md`, `reflection.md`, `environment-setup.md` | documentation |
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-https://claude.ai/code/session_01U5cBgtEpshkHgFWELx4DBM

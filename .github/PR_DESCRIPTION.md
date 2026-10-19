@@ -25,7 +25,3 @@ Adds the **KijaniKiosk DevOps Starter Kit** — the documented engineering found
 1. Open `network-topology.png` and check: can anything in a private subnet be reached from the internet?
 2. Read the IAM permissions JSON: is there any action the receipt task doesn't need?
 3. Challenge the region and IaaS/PaaS choices in `regions-azs.md` and `cloud-model.md`.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-https://claude.ai/code/session_01Daa7JUwjk4voJbmKfKzKjy
