@@ -1,0 +1,337 @@
+KijaniKiosk post-remediation verification   host=edu-vanquiz-VMware-Virtual-Platform   2026-10-19T15:29:16+03:00
+================================================================
+1. Log rotation and the access model (Requirement 3)
+================================================================
+
+$ logrotate --force --debug /etc/logrotate.d/kijanikiosk
+warning: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.
+
+reading config file /etc/logrotate.d/kijanikiosk
+Reading state from file: /var/lib/logrotate/status
+Allocating hash table for state file, size 64 entries
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+
+Handling 1 logs
+
+rotating pattern: /opt/kijanikiosk/shared/logs/kk-api.log
+/opt/kijanikiosk/shared/logs/kk-payments.log
+/opt/kijanikiosk/shared/logs/kk-logs.log  forced from command line (14 rotations)
+empty log files are not rotated, log files >= 52428800 are rotated earlier, old logs are removed
+switching euid from 0 to 994 and egid from 0 to 1001 (pid 351820)
+considering log /opt/kijanikiosk/shared/logs/kk-api.log
+  Now: 2026-10-19 15:29
+  Last rotated at 2026-10-19 15:29
+  log does not need rotating (log is empty)
+considering log /opt/kijanikiosk/shared/logs/kk-payments.log
+  Now: 2026-10-19 15:29
+  Last rotated at 2026-10-19 15:29
+  log needs rotating
+considering log /opt/kijanikiosk/shared/logs/kk-logs.log
+  Now: 2026-10-19 15:29
+  Last rotated at 2026-10-19 15:29
+  log does not need rotating (log is empty)
+rotating log /opt/kijanikiosk/shared/logs/kk-payments.log, log->rotateCount is 14
+dateext suffix '-20261019'
+glob pattern '-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+compressing log with: /bin/gzip
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.14.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.15.gz (rotatecount 14, logstart 1, i 14), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.13.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.14.gz (rotatecount 14, logstart 1, i 13), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.12.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.13.gz (rotatecount 14, logstart 1, i 12), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.11.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.12.gz (rotatecount 14, logstart 1, i 11), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.10.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.11.gz (rotatecount 14, logstart 1, i 10), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.9.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.10.gz (rotatecount 14, logstart 1, i 9), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.8.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.9.gz (rotatecount 14, logstart 1, i 8), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.7.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.8.gz (rotatecount 14, logstart 1, i 7), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.6.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.7.gz (rotatecount 14, logstart 1, i 6), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.5.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.6.gz (rotatecount 14, logstart 1, i 5), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.4.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.5.gz (rotatecount 14, logstart 1, i 4), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.3.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.4.gz (rotatecount 14, logstart 1, i 3), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.2.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.3.gz (rotatecount 14, logstart 1, i 2), 
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log.1.gz to /opt/kijanikiosk/shared/logs/kk-payments.log.2.gz (rotatecount 14, logstart 1, i 1), 
+log /opt/kijanikiosk/shared/logs/kk-payments.log.15.gz doesn't exist -- won't try to dispose of it
+renaming /opt/kijanikiosk/shared/logs/kk-payments.log to /opt/kijanikiosk/shared/logs/kk-payments.log.1
+creating new /opt/kijanikiosk/shared/logs/kk-payments.log mode = 0660 uid = 994 gid = 1001
+running postrotate script
+running script with args /opt/kijanikiosk/shared/logs/kk-api.log
+/opt/kijanikiosk/shared/logs/kk-payments.log
+/opt/kijanikiosk/shared/logs/kk-logs.log  : "
+        # None of the units implement ExecReload, so 'reload' would fail.
+        # try-restart reopens the log and does nothing if a service is stopped.
+        systemctl try-restart kk-api.service kk-payments.service kk-logs.service >/dev/null 2>&1 || true
+"
+switching euid from 994 to 0 and egid from 1001 to 0 (pid 351820)
+(exit 0)
+
+$ logrotate --force /etc/logrotate.d/kijanikiosk
+(exit 0)
+
+$ ls -la /opt/kijanikiosk/shared/logs/
+total 80
+drwxrws---+ 2 kk-logs kijanikiosk 4096 Oct 19 15:29 .
+drwxr-x---  3 root    kijanikiosk 4096 Oct 19 15:00 ..
+-rw-rw----+ 1 kk-logs kijanikiosk    0 Oct 19 15:29 kk-api.log
+-rw-rw----+ 1 kk-logs kijanikiosk   81 Oct 19 15:29 kk-api.log.1
+-rw-rw----+ 1 kk-logs kijanikiosk   97 Oct 19 15:29 kk-api.log.2.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:15 kk-api.log.3.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   97 Oct 19 15:15 kk-api.log.4.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   97 Oct 19 15:08 kk-api.log.5.gz
+-rw-rw----+ 1 kk-logs kijanikiosk    0 Oct 19 15:29 kk-logs.log
+-rw-rw----+ 1 kk-logs kijanikiosk   81 Oct 19 15:29 kk-logs.log.1
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:29 kk-logs.log.2.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:15 kk-logs.log.3.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:15 kk-logs.log.4.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:08 kk-logs.log.5.gz
+-rw-rw----+ 1 kk-logs kijanikiosk    0 Oct 19 15:29 kk-payments.log
+-rw-rw----+ 1 kk-logs kijanikiosk   60 Oct 19 15:29 kk-payments.log.1
+-rw-rw----+ 1 kk-logs kijanikiosk  135 Oct 19 15:29 kk-payments.log.2.gz
+-rw-rw----+ 1 kk-logs kijanikiosk  137 Oct 19 15:29 kk-payments.log.3.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   75 Oct 19 15:15 kk-payments.log.4.gz
+-rw-rw----+ 1 kk-logs kijanikiosk  136 Oct 19 15:15 kk-payments.log.5.gz
+-rw-rw----+ 1 kk-logs kijanikiosk  138 Oct 19 15:15 kk-payments.log.6.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:08 kk-payments.log.7.gz
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/shared/logs/
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk/shared/logs/
+# owner: kk-logs
+# group: kijanikiosk
+# flags: -s-
+user::rwx
+user:kk-payments:r-x
+user:kk-api:rwx
+group::r-x
+mask::rwx
+other::---
+default:user::rwx
+default:user:kk-payments:r-x
+default:user:kk-api:rwx
+default:group::r-x
+default:mask::rwx
+default:other::---
+
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/shared/logs/kk-api.log
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk/shared/logs/kk-api.log
+# owner: kk-logs
+# group: kijanikiosk
+user::rw-
+user:kk-payments:r-x	#effective:r--
+user:kk-api:rwx	#effective:rw-
+group::r-x	#effective:r--
+mask::rw-
+other::---
+
+(exit 0)
+
+$ sudo -u kk-api touch /opt/kijanikiosk/shared/logs/test-write.tmp && echo PASS || echo FAIL
+PASS: kk-api can write after logrotate
+
+$ getfacl /opt/kijanikiosk/shared/logs/test-write.tmp
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk/shared/logs/test-write.tmp
+# owner: kk-api
+# group: kijanikiosk
+user::rw-
+user:kk-payments:r-x	#effective:r--
+user:kk-api:rwx	#effective:rw-
+group::r-x	#effective:r--
+mask::rw-
+other::---
+
+(exit 0)
+
+PASS: kk-payments can read kk-api.log after logrotate
+
+================================================================
+2. Access model: getfacl for the four key directories
+================================================================
+
+$ getfacl /opt/kijanikiosk
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk
+# owner: root
+# group: kijanikiosk
+user::rwx
+group::r-x
+other::---
+
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/config
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk/config
+# owner: root
+# group: kijanikiosk
+user::rwx
+group::r-x
+other::---
+
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/shared/logs
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk/shared/logs
+# owner: kk-logs
+# group: kijanikiosk
+# flags: -s-
+user::rwx
+user:kk-payments:r-x
+user:kk-api:rwx
+group::r-x
+mask::rwx
+other::---
+default:user::rwx
+default:user:kk-payments:r-x
+default:user:kk-api:rwx
+default:group::r-x
+default:mask::rwx
+default:other::---
+
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/health
+getfacl: Removing leading '/' from absolute path names
+# file: opt/kijanikiosk/health
+# owner: kk-logs
+# group: kijanikiosk
+# flags: -s-
+user::rwx
+group::r-x
+other::---
+default:user::rwx
+default:group::r-x
+default:other::---
+
+(exit 0)
+
+$ ls -la /opt/kijanikiosk/config/
+total 20
+drwxr-x--- 2 root kijanikiosk 4096 Oct 19 15:08 .
+drwxr-x--- 8 root kijanikiosk 4096 Oct 19 15:08 ..
+-rw-r----- 1 root kk-api       183 Oct 19 15:08 api.env
+-rw-r----- 1 root kk-logs      184 Oct 19 15:08 logs.env
+-rw-r----- 1 root kk-payments  186 Oct 19 15:08 payments-api.env
+(exit 0)
+PASS: kk-api can read /opt/kijanikiosk/config/api.env
+PASS: kk-payments can read /opt/kijanikiosk/config/payments-api.env
+PASS: kk-logs can read /opt/kijanikiosk/config/logs.env
+PASS: kk-api cannot read the payments environment file
+
+================================================================
+3. Health check file (Phase 8, Challenge B)
+================================================================
+
+$ ls -la /opt/kijanikiosk/health/
+total 12
+drwxr-s---+ 2 kk-logs kijanikiosk 4096 Oct 19 15:08 .
+drwxr-x---  8 root    kijanikiosk 4096 Oct 19 15:08 ..
+-rw-r-----  1 kk-logs kijanikiosk  117 Oct 19 15:29 last-provision.json
+(exit 0)
+$ sudo -u edu-vanquiz cat /opt/kijanikiosk/health/last-provision.json   (operator account, no root)
+{"timestamp":"2026-10-19T15:29:15+03:00","run_id":"20261019T152911","kk-api":"ok","kk-payments":"ok","kk-logs":"ok"}
+PASS: edu-vanquiz can read the health file
+
+================================================================
+4. Firewall (Requirement 4)
+================================================================
+
+$ ufw status numbered
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 3001/tcp on lo             ALLOW IN    Anywhere                   # kk-payments: loopback only, for nginx proxying
+[ 2] 3001/tcp                   ALLOW IN    10.0.1.0/24                # kk-payments health check from monitoring subnet
+[ 3] 3001/tcp                   DENY IN     Anywhere                   # kk-payments internal port: block every other source
+[ 4] 22/tcp                     ALLOW IN    10.0.1.0/24                # SSH from monitoring/admin subnet only
+[ 5] 80/tcp                     ALLOW IN    10.0.1.0/24                # HTTP (nginx) from monitoring subnet only
+[ 6] 3001/tcp (v6) on lo        ALLOW IN    Anywhere (v6)              # kk-payments: loopback only, for nginx proxying
+[ 7] 3001/tcp (v6)              DENY IN     Anywhere (v6)              # kk-payments internal port: block every other source
+
+(exit 0)
+
+$ ufw status verbose | head -5
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), deny (routed)
+New profiles: skip
+
+(exit 0)
+
+$ curl -sS -m 3 -o /dev/null -w 'loopback 3001 -> HTTP %{http_code}\n' http://localhost:3001/
+loopback 3001 -> HTTP 200
+(exit 0)
+External test (run from your HOST machine, not the VM; it must time out or be refused):
+    curl -m 5 http://172.19.125.187:3001/
+
+================================================================
+5. systemd hardening scores (Requirements 2 and 6)
+================================================================
+
+$ systemctl is-active kk-api; systemd-analyze security --no-pager kk-api.service | tail -1
+active
+→ Overall exposure level for kk-api.service: 1.1 OK 🙂
+(exit 0)
+
+$ systemctl is-active kk-payments; systemd-analyze security --no-pager kk-payments.service | tail -1
+active
+→ Overall exposure level for kk-payments.service: 1.2 OK 🙂
+(exit 0)
+
+$ systemctl is-active kk-logs; systemd-analyze security --no-pager kk-logs.service | tail -1
+active
+→ Overall exposure level for kk-logs.service: 1.1 OK 🙂
+(exit 0)
+
+$ systemctl show -p After -p Wants kk-payments.service
+Wants=network-online.target kk-api.service tmp.mount
+After=kk-api.service network-online.target system.slice tmp.mount -.mount sysinit.target basic.target systemd-tmpfiles-setup.service
+(exit 0)
+
+================================================================
+6. Journal persistence (Phase 7)
+================================================================
+
+$ systemd-analyze cat-config systemd/journald.conf | grep -E '^(Storage|SystemMaxUse)='
+Storage=persistent
+SystemMaxUse=500M
+(exit 0)
+
+$ journalctl --disk-usage
+Archived and active journals take up 281.1M in the file system.
+(exit 0)
+
+$ ls -d /var/log/journal/*
+/var/log/journal/5102227d41824ac2974b00ed43b788c0
+(exit 0)

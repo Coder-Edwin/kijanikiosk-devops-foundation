@@ -1,0 +1,198 @@
+KijaniKiosk pre-provisioning audit
+Host: edu-vanquiz-VMware-Virtual-Platform   Date: 2026-10-19T15:28:59+03:00   Kernel: 7.0.0-34-generic
+OS: Ubuntu 24.04.3 LTS
+================================================================
+Audit commands from the brief
+================================================================
+
+$ getent passwd kk-api kk-payments kk-logs
+kk-api:x:997:983::/home/kk-api:/bin/bash
+kk-payments:x:995:982::/home/kk-payments:/usr/sbin/nologin
+kk-logs:x:994:981::/nonexistent:/usr/sbin/nologin
+(exit 0)
+
+$ getent group kijanikiosk
+kijanikiosk:x:1001:kk-logs,kk-api,edu-vanquiz
+(exit 0)
+
+$ ls -la /opt/kijanikiosk/
+total 32
+drwxr-x---  8 root    kijanikiosk 4096 Oct 19 15:08 .
+drwxr-xr-x  6 root    root        4096 Oct 19 15:00 ..
+drwxr-x---  4 root    kk-api      4096 Oct 19 15:08 api
+drwxrwxrwx  2 root    kijanikiosk 4096 Oct 19 15:08 config
+drwxr-s---+ 2 kk-logs kijanikiosk 4096 Oct 19 15:08 health
+drwxr-x---  4 root    kk-logs     4096 Oct 19 15:08 logs
+drwxr-x---  4 root    kk-payments 4096 Oct 19 15:08 payments
+drwxr-x---  3 root    kijanikiosk 4096 Oct 19 15:00 shared
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/shared/logs/ 2>/dev/null
+# file: opt/kijanikiosk/shared/logs/
+# owner: kk-logs
+# group: kijanikiosk
+# flags: -s-
+user::rwx
+user:kk-api:rwx
+group::r-x
+mask::rwx
+other::---
+
+(exit 0)
+
+$ getfacl /opt/kijanikiosk/config/ 2>/dev/null
+# file: opt/kijanikiosk/config/
+# owner: root
+# group: kijanikiosk
+user::rwx
+group::rwx
+other::rwx
+
+(exit 0)
+
+$ ufw status numbered
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 3001/tcp on lo             ALLOW IN    Anywhere                   # kk-payments: loopback only, for nginx proxying
+[ 2] 3001/tcp                   ALLOW IN    10.0.1.0/24                # kk-payments health check from monitoring subnet
+[ 3] 3001/tcp                   DENY IN     Anywhere                   # kk-payments internal port: block every other source
+[ 4] 22/tcp                     ALLOW IN    10.0.1.0/24                # SSH from monitoring/admin subnet only
+[ 5] 80/tcp                     ALLOW IN    10.0.1.0/24                # HTTP (nginx) from monitoring subnet only
+[ 6] 22/tcp                     ALLOW IN    Anywhere                  
+[ 7] 80/tcp                     ALLOW IN    Anywhere                  
+[ 8] 3001                       DENY IN     Anywhere                  
+[ 9] 3001/tcp (v6) on lo        ALLOW IN    Anywhere (v6)              # kk-payments: loopback only, for nginx proxying
+[10] 3001/tcp (v6)              DENY IN     Anywhere (v6)              # kk-payments internal port: block every other source
+[11] 22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+[12] 80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+[13] 3001 (v6)                  DENY IN     Anywhere (v6)             
+
+(exit 0)
+
+$ apt-mark showhold
+curl
+(exit 0)
+
+$ systemctl list-unit-files | grep kk-
+kk-api.service                                 enabled         enabled
+kk-logs.service                                enabled         enabled
+kk-payments.service                            enabled         enabled
+(exit 0)
+
+$ systemd-analyze security kk-api.service 2>/dev/null | head -5
+  NAME                                                        DESCRIPTION                                                             EXPOSURE
+✗ RemoveIPC=                                                  Service user may leave SysV IPC objects around                               0.1
+✗ RootDirectory=/RootImage=                                   Service runs within the host's root directory                                0.1
+✓ User=/DynamicUser=                                          Service runs under a static non-root user identity                      
+✗ CapabilityBoundingSet=~CAP_SYS_TIME                         Service processes may change the system clock                                0.2
+(exit 0)
+
+$ du -sh /opt/kijanikiosk/shared/logs/
+52K	/opt/kijanikiosk/shared/logs/
+(exit 0)
+
+$ journalctl --disk-usage
+Archived and active journals take up 281.1M in the file system.
+(exit 0)
+
+================================================================
+Extra probes used by the provisioning script
+================================================================
+
+$ id kk-api; id kk-payments; id kk-logs
+uid=997(kk-api) gid=983(kk-api) groups=983(kk-api),1001(kijanikiosk)
+uid=995(kk-payments) gid=982(kk-payments) groups=982(kk-payments)
+uid=994(kk-logs) gid=981(kk-logs) groups=981(kk-logs),4(adm),1001(kijanikiosk)
+(exit 0)
+
+$ dpkg-query -W -f='${Package} ${Version} ${Status}\n' nginx curl acl ufw logrotate python3
+acl 2.3.2-1build1.1 install ok installed
+curl 8.5.0-2ubuntu10.16 hold ok installed
+logrotate 3.21.0-2build1 install ok installed
+nginx 1.24.0-2ubuntu7.18 install ok installed
+python3 3.12.3-0ubuntu2.1 install ok installed
+ufw 0.36.2-6 install ok installed
+(exit 0)
+
+$ ls -la /etc/kijanikiosk/ 2>/dev/null || echo 'no /etc/kijanikiosk'
+total 20
+drwxr-xr-x   2 root root  4096 Oct 19 15:28 .
+drwxr-xr-x 147 root root 12288 Oct 19 15:28 ..
+-rw-r--r--   1 root root    18 Oct 19 15:28 payments-api.env
+(exit 0)
+
+$ ls -la /etc/systemd/system/kk-*.service /etc/systemd/system/kk-*.service.d 2>/dev/null
+-rw-r--r-- 1 root root  168 Oct 19 15:28 /etc/systemd/system/kk-api.service
+-rw-r--r-- 1 root root 1943 Oct 19 15:08 /etc/systemd/system/kk-logs.service
+-rw-r--r-- 1 root root 1980 Oct 19 15:08 /etc/systemd/system/kk-payments.service
+
+/etc/systemd/system/kk-api.service.d:
+total 12
+drwxr-xr-x  2 root root 4096 Oct 19 15:28 .
+drwxr-xr-x 29 root root 4096 Oct 19 15:28 ..
+-rw-r--r--  1 root root   27 Oct 19 15:28 override.conf
+(exit 0)
+
+$ ls -la /etc/logrotate.d/kijanikiosk 2>/dev/null && cat /etc/logrotate.d/kijanikiosk
+-rw-r--r-- 1 root root 89 Oct 19 15:28 /etc/logrotate.d/kijanikiosk
+/opt/kijanikiosk/shared/logs/*.log {
+    weekly
+    rotate 4
+    create 0640 root root
+}
+(exit 0)
+
+$ ls -la /opt/kijanikiosk/shared/logs/ /opt/kijanikiosk/config/ 2>/dev/null
+/opt/kijanikiosk/config/:
+total 20
+drwxrwxrwx 2 root kijanikiosk 4096 Oct 19 15:08 .
+drwxr-x--- 8 root kijanikiosk 4096 Oct 19 15:08 ..
+-rw-r----- 1 root kk-api       183 Oct 19 15:08 api.env
+-rw-r----- 1 root kk-logs      184 Oct 19 15:08 logs.env
+-rw-r----- 1 root kk-payments  186 Oct 19 15:08 payments-api.env
+
+/opt/kijanikiosk/shared/logs/:
+total 56
+drwxrws---+ 2 kk-logs kijanikiosk 4096 Oct 19 15:23 .
+drwxr-x---  3 root    kijanikiosk 4096 Oct 19 15:00 ..
+-rw-r--r--+ 1 root    root           4 Oct 19 15:28 kk-api.log
+-rw-rw----+ 1 kk-logs kijanikiosk   81 Oct 19 15:15 kk-api.log.1
+-rw-rw----+ 1 kk-logs kijanikiosk   97 Oct 19 15:15 kk-api.log.2.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   97 Oct 19 15:08 kk-api.log.3.gz
+-rw-rw----+ 1 kk-logs kijanikiosk    0 Oct 19 15:15 kk-logs.log
+-rw-rw----+ 1 kk-logs kijanikiosk   81 Oct 19 15:15 kk-logs.log.1
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:15 kk-logs.log.2.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:08 kk-logs.log.3.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   60 Oct 19 15:23 kk-payments.log
+-rw-rw----+ 1 kk-logs kijanikiosk   60 Oct 19 15:15 kk-payments.log.1
+-rw-rw----+ 1 kk-logs kijanikiosk  136 Oct 19 15:15 kk-payments.log.2.gz
+-rw-rw----+ 1 kk-logs kijanikiosk  138 Oct 19 15:15 kk-payments.log.3.gz
+-rw-rw----+ 1 kk-logs kijanikiosk   94 Oct 19 15:08 kk-payments.log.4.gz
+(exit 0)
+
+$ test -d /var/log/journal && echo 'journal: persistent dir exists' || echo 'journal: volatile (no /var/log/journal)'
+journal: persistent dir exists
+(exit 0)
+
+================================================================
+Interpretation: dirty conditions found (copied to the top of the script)
+================================================================
+# Expected dirty conditions found in pre-provisioning audit:
+# - D1: kk-api already exists (UID 997, login shell /bin/bash, home /home/kk-api): handled in Phase 3 by id check, parameters converged with usermod
+# - D1: kk-payments already exists (UID 995, home /home/kk-payments): handled in Phase 3 by id check, parameters converged with usermod
+# - D1: kk-logs already exists (UID 994): handled in Phase 3 by id check, parameters converged with usermod
+# - D2: /opt/kijanikiosk/config is 777 root:kijanikiosk (spec 750 root:kijanikiosk): fixed in Phase 4
+# - D2: /opt/kijanikiosk/shared/logs ACL has no kk-payments entry: fixed in Phase 4
+# - D2: /opt/kijanikiosk/shared/logs has no default ACL, so new files (logrotate) would not inherit access: fixed in Phase 4
+# - D3: hand-edited /etc/logrotate.d/kijanikiosk present: compared, backed up and replaced in Phase 7
+# - D4: ufw active with 13 hand-made rule(s) (some without comments): reset to baseline and rebuilt from intent in Phase 5
+# - D5: package holds present (curl): versions compared with pins in Phase 2, holds re-asserted
+# - D5: nginx installed at 1.24.0-2ubuntu7.18: compared with the pin before any install (Phase 2)
+# - D5: curl installed at 8.5.0-2ubuntu10.16: compared with the pin before any install (Phase 2)
+# - D6: kk-api.service exists from an earlier lab: compared with the inline unit, replaced if different (Phase 6)
+# - D6: kk-api.service.d drop-in overrides present: backed up and removed (Phase 6)
+# - D6: kk-payments.service exists from an earlier lab: compared with the inline unit, replaced if different (Phase 6)
+# - D6: kk-logs.service exists from an earlier lab: compared with the inline unit, replaced if different (Phase 6)
+# - Challenge A: config files under /etc/kijanikiosk: backed up and removed, single source is /opt/kijanikiosk/config (Phase 4)
