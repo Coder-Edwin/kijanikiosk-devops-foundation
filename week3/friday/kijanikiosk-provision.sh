@@ -464,7 +464,7 @@ guard_sources=()
 [[ -n "$KK_ADMIN_CIDR" ]] && guard_sources+=("$KK_ADMIN_CIDR")
 while read -r peer; do
   [[ -n "$peer" ]] && guard_sources+=("${peer}/32")
-done < <(ss -Htn state established '( sport = :22 )' 2>/dev/null | awk '{print $4}' | sed -E 's/^\[?(::ffff:)?//; s/\]?:[0-9]+$//' | grep -E '^[0-9.]+$' | sort -u)
+done < <(ss -Htn state established '( sport = :22 )' 2>/dev/null | awk '{print $4}' | sed -E 's/^\[?(::ffff:)?//; s/\]?:[0-9]+$//' | grep -E '^[0-9.]+$' | sort -u || true)
 for src in $(printf '%s\n' "${guard_sources[@]}" | sort -u); do
   UFW_RULES+=("allow from ${src} to any port 22 proto tcp comment 'operator SSH session (lockout guard)'")
 done
