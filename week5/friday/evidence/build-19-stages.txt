@@ -1,0 +1,11 @@
+Build #19  result=FAILED  total=57.1s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.4s
+Lint              SUCCESS              12.8s
+Build             SUCCESS              11.8s
+Verify            SUCCESS               0.2s
+Test              FAILED               10.3s
+Security Audit    SUCCESS               9.9s
+Archive           FAILED                0.1s
+Publish           FAILED                0.2s
+Declarative: Post ActionsUNSTABLE              0.8s

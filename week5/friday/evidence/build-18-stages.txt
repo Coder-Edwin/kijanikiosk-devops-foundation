@@ -1,0 +1,11 @@
+Build #18  result=SUCCESS  total=26.5s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.2s
+Lint              SUCCESS               8.1s
+Build             SUCCESS               2.2s
+Verify            SUCCESS               0.1s
+Test              SUCCESS               2.4s
+Security Audit    SUCCESS               2.1s
+Archive           SUCCESS               2.2s
+Publish           SUCCESS               2.0s
+Declarative: Post ActionsSUCCESS               0.2s

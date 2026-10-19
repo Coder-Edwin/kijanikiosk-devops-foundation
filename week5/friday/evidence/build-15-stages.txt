@@ -1,0 +1,11 @@
+Build #15  result=FAILED  total=21.2s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.0s
+Lint              SUCCESS               6.9s
+Build             SUCCESS               2.8s
+Verify            SUCCESS               0.1s
+Test              SUCCESS               2.0s
+Security Audit    SUCCESS               1.8s
+Archive           FAILED                1.5s
+Publish           FAILED                0.3s
+Declarative: Post ActionsSUCCESS               0.5s

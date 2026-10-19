@@ -1,0 +1,269 @@
+Started by user admin
+Checking out git https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git into /var/jenkins_home/workspace/kijanikiosk-ci@script/8dbce8b5497c1e2cc91e3a846624547b04f94a974bc0d7de5f04d303e333f9cb to read Jenkinsfile
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/kijanikiosk-ci@script/8dbce8b5497c1e2cc91e3a846624547b04f94a974bc0d7de5f04d303e333f9cb/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git # timeout=10
+Fetching upstream changes from https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse 8dc632ae774c09b9cf7b92e3c012c52b76178180^{commit} # timeout=10
+Checking out Revision 8dc632ae774c09b9cf7b92e3c012c52b76178180 (detached)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8dc632ae774c09b9cf7b92e3c012c52b76178180 # timeout=10
+Commit message: "fault(archive): archive pattern points at dist/ where no tarball exists (drill step 5)"
+ > git rev-list --no-walk 1d4db383ecccad6f9e41fb2cb74a90cd0e0449e2 # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/kijanikiosk-ci
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git init /var/jenkins_home/workspace/kijanikiosk-ci # timeout=10
+Fetching upstream changes from https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse 8dc632ae774c09b9cf7b92e3c012c52b76178180^{commit} # timeout=10
+Checking out Revision 8dc632ae774c09b9cf7b92e3c012c52b76178180 (detached)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8dc632ae774c09b9cf7b92e3c012c52b76178180 # timeout=10
+Commit message: "fault(archive): archive pattern points at dist/ where no tarball exists (drill step 5)"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:22.23.3-alpine3.24
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container d56bec310c81baeba6d976dcba7aade7752ae6bb3239bc653171aa31fe02d873
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/kijanikiosk-ci --volumes-from d56bec310c81baeba6d976dcba7aade7752ae6bb3239bc653171aa31fe02d873 -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:22.23.3-alpine3.24 cat
+$ docker top d6ad307d9b8f940ec92b15a327e76cc10c023950f36144993410a2359c5d5762 -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 10 min
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:57:57.081Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:57:57.428Z] + node --version
+[2026-10-19T21:57:57.433Z] v22.23.3
+[2026-10-19T21:57:57.433Z] + npm --version
+[2026-10-19T21:57:57.688Z] 10.9.9
+[Pipeline] sh
+[2026-10-19T21:57:57.987Z] + npm ci --no-audit
+[2026-10-19T21:58:02.145Z] 
+[2026-10-19T21:58:02.145Z] added 69 packages in 4s
+[Pipeline] sh
+[2026-10-19T21:58:02.668Z] + npm run lint
+[2026-10-19T21:58:02.919Z] 
+[2026-10-19T21:58:02.919Z] > kijanikiosk-payments@1.0.0 lint
+[2026-10-19T21:58:02.919Z] > eslint .
+[2026-10-19T21:58:02.919Z] 
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:58:04.076Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:58:04.418Z] + node -p 'require('"'"'./package.json'"'"').version'
+[Pipeline] sh
+[2026-10-19T21:58:04.714Z] + node -p 'require('"'"'./package.json'"'"').name'
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+[2026-10-19T21:58:05.285Z] + npm version 1.0.0-8dc632a --no-git-tag-version
+[2026-10-19T21:58:05.536Z] v1.0.0-8dc632a
+[Pipeline] sh
+[2026-10-19T21:58:05.812Z] + npm run build
+[2026-10-19T21:58:06.063Z] 
+[2026-10-19T21:58:06.064Z] > kijanikiosk-payments@1.0.0-8dc632a build
+[2026-10-19T21:58:06.064Z] > node scripts/build.js
+[2026-10-19T21:58:06.064Z] 
+[2026-10-19T21:58:06.614Z] built 5 files into dist/ for kijanikiosk-payments@1.0.0-8dc632a
+[Pipeline] echo
+[2026-10-19T21:58:06.632Z] Artifact version: kijanikiosk-payments@1.0.0-8dc632a
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:58:06.994Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] dir
+[2026-10-19T21:58:07.022Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] sh
+[Pipeline] sh
+[2026-10-19T21:58:07.312Z] + npm test
+[2026-10-19T21:58:07.643Z] + npm audit '--omit=dev' '--audit-level=high'
+[2026-10-19T21:58:07.865Z] 
+[2026-10-19T21:58:07.865Z] > kijanikiosk-payments@1.0.0-8dc632a test
+[2026-10-19T21:58:07.865Z] > mkdir -p reports && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=reports/junit.xml test/*.test.js
+[2026-10-19T21:58:07.865Z] 
+[2026-10-19T21:58:08.115Z] ✔ band edges are inclusive (5.725898ms)
+[2026-10-19T21:58:08.116Z] ✔ rejects amounts outside the allowed range (1.912406ms)
+[2026-10-19T21:58:08.116Z] ✔ creates a pending payment with fee and total (8.227896ms)
+[2026-10-19T21:58:08.116Z] ✔ a retried request with the same idempotency key is not charged twice (0.560112ms)
+[2026-10-19T21:58:08.116Z] ✔ returns every validation error at once (0.582372ms)
+[2026-10-19T21:58:08.116Z] ✔ accepts the formats customers type (7.380421ms)
+[2026-10-19T21:58:08.116Z] ✔ accepts 01xx numbers (0.342736ms)
+[2026-10-19T21:58:08.116Z] ✔ rejects numbers that are not Kenyan mobiles (9.320037ms)
+[2026-10-19T21:58:08.366Z] ✔ GET /health (183.863463ms)
+[2026-10-19T21:58:08.366Z] ✔ POST /payments creates, then replays on retry (40.874536ms)
+[2026-10-19T21:58:08.366Z] ✔ POST /payments rejects invalid input with 422 (15.812267ms)
+[2026-10-19T21:58:08.556Z] found 0 vulnerabilities
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[2026-10-19T21:58:08.617Z] ℹ tests 11
+[2026-10-19T21:58:08.617Z] ℹ suites 0
+[2026-10-19T21:58:08.617Z] ℹ pass 11
+[2026-10-19T21:58:08.617Z] ℹ fail 0
+[2026-10-19T21:58:08.617Z] ℹ cancelled 0
+[2026-10-19T21:58:08.617Z] ℹ skipped 0
+[2026-10-19T21:58:08.617Z] ℹ todo 0
+[2026-10-19T21:58:08.617Z] ℹ duration_ms 738.92812
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:58:08.982Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:58:09.279Z] + npm pack
+[2026-10-19T21:58:10.191Z] npm notice
+[2026-10-19T21:58:10.191Z] npm notice package: kijanikiosk-payments@1.0.0-8dc632a
+[2026-10-19T21:58:10.191Z] npm notice Tarball Contents
+[2026-10-19T21:58:10.191Z] npm notice 286B dist/build-info.json
+[2026-10-19T21:58:10.191Z] npm notice 857B dist/fees.js
+[2026-10-19T21:58:10.191Z] npm notice 140B dist/index.js
+[2026-10-19T21:58:10.191Z] npm notice 1.5kB dist/payments.js
+[2026-10-19T21:58:10.191Z] npm notice 391B dist/phone.js
+[2026-10-19T21:58:10.191Z] npm notice 1.4kB dist/server.js
+[2026-10-19T21:58:10.191Z] npm notice 705B package.json
+[2026-10-19T21:58:10.191Z] npm notice Tarball Details
+[2026-10-19T21:58:10.191Z] npm notice name: kijanikiosk-payments
+[2026-10-19T21:58:10.191Z] npm notice version: 1.0.0-8dc632a
+[2026-10-19T21:58:10.191Z] npm notice filename: kijanikiosk-payments-1.0.0-8dc632a.tgz
+[2026-10-19T21:58:10.191Z] npm notice package size: 2.4 kB
+[2026-10-19T21:58:10.191Z] npm notice unpacked size: 5.3 kB
+[2026-10-19T21:58:10.191Z] npm notice shasum: 281ad7090237332298fbab069a0274f0a8f4d568
+[2026-10-19T21:58:10.191Z] npm notice integrity: sha512-ztREkt4/zUc/U[...]mrwht7z7kfVSg==
+[2026-10-19T21:58:10.191Z] npm notice total files: 7
+[2026-10-19T21:58:10.191Z] npm notice
+[2026-10-19T21:58:10.191Z] kijanikiosk-payments-1.0.0-8dc632a.tgz
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] archiveArtifacts
+[2026-10-19T21:58:10.258Z] Archiving artifacts
+[2026-10-19T21:58:10.339Z] ‘week5/friday/kijanikiosk-payments/dist/*.tgz’ doesn’t match anything: ‘week5’ exists but not ‘week5/friday/kijanikiosk-payments/dist/*.tgz’
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+Stage "Publish" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] junit
+[2026-10-19T21:58:11.061Z] Recording test results
+[2026-10-19T21:58:11.096Z] [Checks API] No suitable checks publisher found.
+[Pipeline] cleanWs
+[2026-10-19T21:58:11.126Z] [WS-CLEANUP] Deleting project workspace...
+[2026-10-19T21:58:11.126Z] [WS-CLEANUP] Deferred wipeout is used...
+[2026-10-19T21:58:11.143Z] [WS-CLEANUP] done
+[Pipeline] echo
+[2026-10-19T21:58:11.220Z] STATUS CHANGE: kijanikiosk-ci went from SUCCESS to FAILURE at #15
+[Pipeline] echo
+[2026-10-19T21:58:11.307Z] NOTIFY team: kijanikiosk-ci #15 FAILED in stage 'Archive' (commit 8dc632a). Nothing was published. Log: http://localhost:8080/job/kijanikiosk-ci/15/console
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 d6ad307d9b8f940ec92b15a327e76cc10c023950f36144993410a2359c5d5762
+$ docker rm -f --volumes d6ad307d9b8f940ec92b15a327e76cc10c023950f36144993410a2359c5d5762
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: No artifacts found that match the file pattern "week5/friday/kijanikiosk-payments/dist/*.tgz". Configuration error?
+Finished: FAILURE

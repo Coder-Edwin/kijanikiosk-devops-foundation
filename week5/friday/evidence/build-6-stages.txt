@@ -1,0 +1,11 @@
+Build #6  result=FAILED  total=48.0s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.7s
+Lint              FAILED               26.8s
+Build             FAILED                0.3s
+Verify            SUCCESS               0.3s
+Test              FAILED                0.1s
+Security Audit    FAILED                0.2s
+Archive           FAILED                0.2s
+Publish           FAILED                0.2s
+Declarative: Post ActionsSUCCESS               0.7s

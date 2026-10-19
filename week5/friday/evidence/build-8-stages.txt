@@ -1,0 +1,11 @@
+Build #8  result=SUCCESS  total=36.4s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               3.1s
+Lint              SUCCESS              11.1s
+Build             SUCCESS               3.9s
+Verify            SUCCESS               0.2s
+Test              SUCCESS               3.9s
+Security Audit    SUCCESS               4.2s
+Archive           SUCCESS               2.8s
+Publish           SUCCESS               2.8s
+Declarative: Post ActionsSUCCESS               0.5s

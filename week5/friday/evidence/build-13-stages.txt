@@ -1,0 +1,11 @@
+Build #13  result=FAILED  total=35.8s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               3.5s
+Lint              SUCCESS              10.4s
+Build             SUCCESS               5.2s
+Verify            SUCCESS               0.1s
+Test              SUCCESS               2.8s
+Security Audit    FAILED                4.8s
+Archive           FAILED                0.2s
+Publish           FAILED                0.1s
+Declarative: Post ActionsSUCCESS               0.5s

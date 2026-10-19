@@ -1,0 +1,211 @@
+Started by user admin
+Checking out git https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git into /var/jenkins_home/workspace/kijanikiosk-ci@script/8dbce8b5497c1e2cc91e3a846624547b04f94a974bc0d7de5f04d303e333f9cb to read Jenkinsfile
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/kijanikiosk-ci@script/8dbce8b5497c1e2cc91e3a846624547b04f94a974bc0d7de5f04d303e333f9cb/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git # timeout=10
+Fetching upstream changes from https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse 0e00576cb2618529446c1608577246490bed41b2^{commit} # timeout=10
+Checking out Revision 0e00576cb2618529446c1608577246490bed41b2 (detached)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 0e00576cb2618529446c1608577246490bed41b2 # timeout=10
+Commit message: "fault(build): drop the server module from the package entry point (drill step 2)"
+ > git rev-list --no-walk 019fb6efbab45f32a3cd159b587fec8de2d1c094 # timeout=10
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/kijanikiosk-ci
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git init /var/jenkins_home/workspace/kijanikiosk-ci # timeout=10
+Fetching upstream changes from https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Coder-Edwin/kijanikiosk-devops-foundation.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse 0e00576cb2618529446c1608577246490bed41b2^{commit} # timeout=10
+Checking out Revision 0e00576cb2618529446c1608577246490bed41b2 (detached)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 0e00576cb2618529446c1608577246490bed41b2 # timeout=10
+Commit message: "fault(build): drop the server module from the package entry point (drill step 2)"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:22.23.3-alpine3.24
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container d56bec310c81baeba6d976dcba7aade7752ae6bb3239bc653171aa31fe02d873
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/kijanikiosk-ci --volumes-from d56bec310c81baeba6d976dcba7aade7752ae6bb3239bc653171aa31fe02d873 -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:22.23.3-alpine3.24 cat
+$ docker top 806c7eb56a11098375d5b94c2291560d0b4c2794ef1d5a5d3a2ee973c6c41b11 -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 10 min
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:53:57.861Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:53:58.151Z] + node --version
+[2026-10-19T21:53:58.151Z] v22.23.3
+[2026-10-19T21:53:58.151Z] + npm --version
+[2026-10-19T21:53:58.401Z] 10.9.9
+[Pipeline] sh
+[2026-10-19T21:53:58.687Z] + npm ci --no-audit
+[2026-10-19T21:54:02.813Z] 
+[2026-10-19T21:54:02.813Z] added 69 packages in 4s
+[Pipeline] sh
+[2026-10-19T21:54:03.095Z] + npm run lint
+[2026-10-19T21:54:03.346Z] 
+[2026-10-19T21:54:03.346Z] > kijanikiosk-payments@1.0.0 lint
+[2026-10-19T21:54:03.346Z] > eslint .
+[2026-10-19T21:54:03.346Z] 
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] dir
+[2026-10-19T21:54:04.988Z] Running in /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
+[2026-10-19T21:54:05.346Z] + node -p 'require('"'"'./package.json'"'"').version'
+[Pipeline] sh
+[2026-10-19T21:54:06.649Z] + node -p 'require('"'"'./package.json'"'"').name'
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+[2026-10-19T21:54:07.060Z] + npm version 1.0.0-0e00576 --no-git-tag-version
+[2026-10-19T21:54:07.975Z] v1.0.0-0e00576
+[Pipeline] sh
+[2026-10-19T21:54:08.629Z] + npm run build
+[2026-10-19T21:54:09.974Z] 
+[2026-10-19T21:54:09.974Z] > kijanikiosk-payments@1.0.0-0e00576 build
+[2026-10-19T21:54:09.974Z] > node scripts/build.js
+[2026-10-19T21:54:09.974Z] 
+[2026-10-19T21:54:11.850Z] /var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments/scripts/build.js:26
+[2026-10-19T21:54:11.850Z]   if (typeof api[name] !== 'function') throw new Error(`build output is missing ${name}()`);
+[2026-10-19T21:54:11.850Z]                                        ^
+[2026-10-19T21:54:11.850Z] 
+[2026-10-19T21:54:11.850Z] Error: build output is missing createServer()
+[2026-10-19T21:54:11.850Z]     at Object.<anonymous> (/var/jenkins_home/workspace/kijanikiosk-ci/week5/friday/kijanikiosk-payments/scripts/build.js:26:46)
+[2026-10-19T21:54:11.850Z]     at Module._compile (node:internal/modules/cjs/loader:1781:14)
+[2026-10-19T21:54:11.850Z]     at Object..js (node:internal/modules/cjs/loader:1913:10)
+[2026-10-19T21:54:11.850Z]     at Module.load (node:internal/modules/cjs/loader:1505:32)
+[2026-10-19T21:54:11.850Z]     at Function._load (node:internal/modules/cjs/loader:1309:12)
+[2026-10-19T21:54:11.850Z]     at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+[2026-10-19T21:54:11.850Z]     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+[2026-10-19T21:54:11.850Z]     at node:internal/main/run_main_module:36:49
+[2026-10-19T21:54:11.850Z] 
+[2026-10-19T21:54:11.850Z] Node.js v22.23.3
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+Stage "Verify" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+Stage "Test" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+Stage "Security Audit" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] // stage
+[Pipeline] }
+[2026-10-19T21:54:12.806Z] Failed in branch Test
+[Pipeline] }
+[2026-10-19T21:54:12.830Z] Failed in branch Security Audit
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+Stage "Archive" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+Stage "Publish" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] junit
+[2026-10-19T21:54:13.813Z] Recording test results
+[2026-10-19T21:54:13.820Z] No test report files were found. Configuration error?
+[2026-10-19T21:54:13.829Z] [Checks API] No suitable checks publisher found.
+[Pipeline] cleanWs
+[2026-10-19T21:54:13.927Z] [WS-CLEANUP] Deleting project workspace...
+[2026-10-19T21:54:13.928Z] [WS-CLEANUP] Deferred wipeout is used...
+[2026-10-19T21:54:13.945Z] [WS-CLEANUP] done
+[Pipeline] echo
+[2026-10-19T21:54:14.006Z] STATUS CHANGE: kijanikiosk-ci went from SUCCESS to FAILURE at #9
+[Pipeline] echo
+[2026-10-19T21:54:14.064Z] NOTIFY team: kijanikiosk-ci #9 FAILED in stage 'Build' (commit 0e00576). Nothing was published. Log: http://localhost:8080/job/kijanikiosk-ci/9/console
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 806c7eb56a11098375d5b94c2291560d0b4c2794ef1d5a5d3a2ee973c6c41b11
+$ docker rm -f --volumes 806c7eb56a11098375d5b94c2291560d0b4c2794ef1d5a5d3a2ee973c6c41b11
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

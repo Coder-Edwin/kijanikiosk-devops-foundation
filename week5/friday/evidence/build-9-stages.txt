@@ -1,0 +1,11 @@
+Build #9  result=FAILED  total=24.3s
+Stage             Result            Duration
+Declarative: Checkout SCMSUCCESS               2.4s
+Lint              SUCCESS               7.1s
+Build             FAILED                7.3s
+Verify            SUCCESS               0.2s
+Test              FAILED                0.2s
+Security Audit    FAILED                0.2s
+Archive           FAILED                0.2s
+Publish           FAILED                0.2s
+Declarative: Post ActionsSUCCESS               0.4s
