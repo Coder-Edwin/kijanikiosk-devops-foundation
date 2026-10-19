@@ -5,7 +5,7 @@ const FEE_BANDS = [
   { upTo: 100, fee: 0 },
   { upTo: 500, fee: 7 },
   { upTo: 1000, fee: 13 },
-  { upTo: 1500, fee: 25 },
+  { upTo: 1500, fee: 23 },
   { upTo: 2500, fee: 33 },
   { upTo: 3500, fee: 53 },
   { upTo: 5000, fee: 57 },
