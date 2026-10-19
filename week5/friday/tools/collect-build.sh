@@ -23,10 +23,10 @@ j "${JOB}/${NUM}/consoleText" > "${OUT}/build-${NUM}-console.txt"
 j "${JOB}/${NUM}/wfapi/describe" | python3 -c '
 import json, sys
 d = json.load(sys.stdin)
-print(f"Build #{d[\"id\"]}  result={d[\"status\"]}  total={d[\"durationMillis\"]/1000:.1f}s")
-print(f"{\"Stage\":<18}{\"Result\":<16}{\"Duration\":>10}")
+print("Build #%s  result=%s  total=%.1fs" % (d["id"], d["status"], d["durationMillis"] / 1000))
+print("%-18s%-16s%10s" % ("Stage", "Result", "Duration"))
 for s in d["stages"]:
-    print(f"{s[\"name\"]:<18}{s[\"status\"]:<16}{s[\"durationMillis\"]/1000:>9.1f}s")
+    print("%-18s%-16s%9.1fs" % (s["name"], s["status"], s["durationMillis"] / 1000))
 ' | tee "${OUT}/build-${NUM}-stages.txt"
 
 if [[ "$LABEL" == green ]]; then

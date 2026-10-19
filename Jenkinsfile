@@ -25,7 +25,8 @@ pipeline {
         npm_config_fund      = 'false'
         npm_config_update_notifier = 'false'
         CI                   = 'true'
-        LAST_STAGE           = 'Checkout'
+        // Set at run time, not here: ARTIFACT_VERSION and PACKAGE_NAME (Build stage), LAST_STAGE (every stage).
+        // Values declared in this block are read-only for the whole run, so they cannot be declared here.
     }
 
     stages {
