@@ -1,0 +1,30 @@
+# Dependencies and build output are produced inside the build, never copied in
+node_modules
+dist
+
+# Version control
+.git
+.gitignore
+
+# Secrets and local environment files
+.env
+.env.*
+*.env
+*.pem
+*.key
+
+# Tests and coverage
+test
+tests
+__tests__
+*.test.ts
+*.spec.ts
+coverage
+
+# Pipeline evidence, manifests and docs are not part of the image
+*.txt
+*.md
+*.yaml
+*.yml
+*.sh
+Dockerfile*
