@@ -19,7 +19,7 @@ spec:
       containers:
         - name: kk-payments
           # Set by run-pipeline.sh to REGISTRY/kk-payments:VERSION-GITSHA
-          image: ghcr.io/coder-edwin/kk-payments:TAG_SET_BY_PIPELINE
+          image: ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

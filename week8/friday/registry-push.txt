@@ -1,0 +1,208 @@
+KijaniKiosk kk-payments: registry push and pull verification
+Generated: 2026-11-12 02:30:14
+
+==== Version string computation ====
+$ VERSION=$(sed -nE 's/^[[:space:]]*"version":[[:space:]]*"([^"]+)".*/\1/p' package.json | head -1)
+$ GITSHA=$(git rev-parse --short=7 HEAD)
+$ TAG="${VERSION}-${GITSHA}"
+VERSION=1.8.0
+GITSHA=3d51203
+TAG=1.8.0-3d51203
+
+==== Tag and push ====
+$ docker tag kk-payments:1.8.0-3d51203 ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+$ docker push ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+The push refers to repository [ghcr.io/coder-edwin/kk-payments]
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+2edc47c4a646: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+44136fa355b3: Waiting
+25f1d6b1951a: Waiting
+252f62cfa3c6: Waiting
+44136fa355b3: Waiting
+44136fa355b3: Pushed
+b9cb8382176f: Waiting
+b9cb8382176f: Waiting
+b9cb8382176f: Waiting
+b9cb8382176f: Waiting
+252f62cfa3c6: Pushed
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+1b5bb78ac42c: Waiting
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+bade515f473e: Waiting
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+b9cb8382176f: Waiting
+1b5bb78ac42c: Waiting
+bade515f473e: Waiting
+b9cb8382176f: Waiting
+bade515f473e: Pushed
+b9cb8382176f: Pushed
+1b5bb78ac42c: Pushed
+25f1d6b1951a: Pushed
+2edc47c4a646: Pushed
+1.8.0-3d51203: digest: sha256:8547b478f71257063d0bffde7e4111f078f70563e1576a582ab7167cc18cddfc size: 856
+
+==== Delete every local copy (registry becomes the only source) ====
+$ docker rmi ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203 kk-payments:1.8.0-3d51203
+Untagged: ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+Untagged: kk-payments:1.8.0-3d51203
+Deleted: sha256:8547b478f71257063d0bffde7e4111f078f70563e1576a582ab7167cc18cddfc
+$ docker images --filter=reference=*kk-payments:1.8.0-3d51203
+IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
+
+==== Fresh pull from the registry ====
+$ docker pull ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+1.8.0-3d51203: Pulling from coder-edwin/kk-payments
+1b5bb78ac42c: Pulling fs layer
+25f1d6b1951a: Pulling fs layer
+2edc47c4a646: Pulling fs layer
+bade515f473e: Pulling fs layer
+b9cb8382176f: Pulling fs layer
+25f1d6b1951a: Already exists
+2edc47c4a646: Already exists
+bade515f473e: Already exists
+b9cb8382176f: Already exists
+44136fa355b3: Already exists
+1b5bb78ac42c: Already exists
+25f1d6b1951a: Pull complete
+2edc47c4a646: Pull complete
+b9cb8382176f: Pull complete
+bade515f473e: Pull complete
+1b5bb78ac42c: Pull complete
+252f62cfa3c6: Download complete
+Digest: sha256:8547b478f71257063d0bffde7e4111f078f70563e1576a582ab7167cc18cddfc
+Status: Downloaded newer image for ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+$ docker images --filter=reference=ghcr.io/coder-edwin/kk-payments
+IMAGE                                           ID             DISK USAGE   CONTENT SIZE   EXTRA
+ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203   8547b478f712       89.8MB         24.6MB        
+$ docker inspect -f RepoDigests={{.RepoDigests}} ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+RepoDigests=[ghcr.io/coder-edwin/kk-payments@sha256:8547b478f71257063d0bffde7e4111f078f70563e1576a582ab7167cc18cddfc]
+
+==== Credential audit (no tokens or passwords in committed files) ====
+$ grep -rEn 'ghp_|github_pat_|dckr_pat_|"auth"[[:space:]]*:|password[[:space:]]*[:=]' . --exclude=run-pipeline.sh --exclude=registry-push.txt
+No credentials found: audit passed

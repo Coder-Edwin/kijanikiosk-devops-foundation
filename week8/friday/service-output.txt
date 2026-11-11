@@ -1,0 +1,39 @@
+KijaniKiosk kk-payments: service verification
+Generated: 2026-11-12 02:31:23
+
+==== Apply service ====
+$ kubectl apply -f kk-payments-service.yaml
+service/kk-payments-service unchanged
+$ kubectl get service kk-payments-service
+NAME                  TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kk-payments-service   NodePort   10.101.140.48   <none>        3001:30001/TCP   3s
+
+==== Endpoints (must list both Pod IPs) ====
+$ kubectl get endpoints kk-payments-service
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                  ENDPOINTS                         AGE
+kk-payments-service   10.244.0.3:3001,10.244.0.4:3001   3s
+$ kubectl get pods -l app=kk-payments -o custom-columns=POD:.metadata.name,IP:.status.podIP
+POD                            IP
+kk-payments-6b7dcb6766-gvtvb   10.244.0.4
+kk-payments-6b7dcb6766-jrrll   10.244.0.3
+
+==== External access through the NodePort ====
+$ curl -s http://$(minikube ip):30001/health    # minikube ip = 192.168.49.2
+{"status":"ok","service":"kk-payments","version":"1.8.0-3d51203","pod":"kk-payments-6b7dcb6766-gvtvb","uptimeSeconds":7}
+
+==== In-cluster DNS: kk-payments-service.default.svc.cluster.local:3001 ====
+$ kubectl run dns-check --image=curlimages/curl --rm -i --restart=Never -- curl -s http://kk-payments-service.default.svc.cluster.local:3001/health
+All commands and output from this session will be recorded in container logs, including credentials and sensitive information passed through the command prompt.
+If you don't see a command prompt, try pressing enter.
+pod "dns-check" deleted from default namespace
+
+
+==== Version check ====
+deployed tag : 1.8.0-3d51203
+health says  : 1.8.0-3d51203
+
+==== In-cluster DNS re-check (exec into a running kk-payments Pod) ====
+Note: the curl Pod above completed before attach, so its response was not captured.
+$ kubectl exec pod/kk-payments-6b7dcb6766-gzj56 -- wget -qO- http://kk-payments-service.default.svc.cluster.local:3001/health
+{"status":"ok","service":"kk-payments","version":"1.8.0-3d51203","pod":"kk-payments-6b7dcb6766-gzj56","uptimeSeconds":1245}
