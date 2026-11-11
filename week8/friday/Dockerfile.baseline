@@ -1,0 +1,8 @@
+# Monday-style single-stage baseline, kept ONLY to measure the image size
+# reduction for the Nia comparison. Never deployed.
+FROM node:20
+WORKDIR /app
+COPY . .
+RUN npm install && npm run build
+EXPOSE 3001
+CMD ["node", "dist/server.js"]
