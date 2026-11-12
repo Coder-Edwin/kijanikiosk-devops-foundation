@@ -1,0 +1,99 @@
+---
+# Configures every environment's runtime settings after Terraform has created
+# the namespaces. Idempotent: safe to run on every pipeline execution.
+#
+#   cd capstone/infra/ansible && ansible-playbook configure-environments.yml
+#
+# Uses only ansible.builtin modules and kubectl, so no extra collections or
+# Python libraries are needed on the control node.
+- name: Configure kk-payments environments
+  hosts: control
+  gather_facts: false
+
+  vars:
+    kube_context: minikube
+    source_secret_namespace: default
+    pull_secret_name: kijani-registry-credentials
+    configmap_name: kk-payments-config
+    environments:
+      - staging
+      - production
+
+  tasks:
+    - name: Refuse to run against anything except the expected cluster
+      ansible.builtin.command: kubectl config current-context
+      register: current_context
+      changed_when: false
+      failed_when: current_context.stdout != kube_context
+
+    - name: Load per-environment settings
+      ansible.builtin.include_vars:
+        file: "vars/{{ item }}.yml"
+        name: "env_{{ item }}"
+      loop: "{{ environments }}"
+
+    - name: Check every target namespace exists (Terraform creates staging)
+      ansible.builtin.command: "kubectl get namespace {{ lookup('vars', 'env_' ~ item).namespace }}"
+      loop: "{{ environments }}"
+      changed_when: false
+
+    - name: Apply the kk-payments ConfigMap in each environment
+      ansible.builtin.command:
+        cmd: "kubectl apply -n {{ env.namespace }} -f -"
+        stdin: "{{ manifest | to_nice_yaml }}"
+      vars:
+        env: "{{ lookup('vars', 'env_' ~ item) }}"
+        manifest:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: "{{ configmap_name }}"
+            labels:
+              app: kk-payments
+              app.kubernetes.io/managed-by: ansible
+              kijanikiosk.io/environment: "{{ item }}"
+          data: "{{ env.app_config }}"
+      loop: "{{ environments }}"
+      register: cm_apply
+      changed_when: "'unchanged' not in cm_apply.stdout"
+
+    - name: Read the registry pull secret from production
+      ansible.builtin.command: >-
+        kubectl get secret {{ pull_secret_name }}
+        -n {{ source_secret_namespace }}
+        -o 'jsonpath={.data.\.dockerconfigjson}'
+      register: pull_secret_b64
+      changed_when: false
+      no_log: true
+
+    - name: Copy the pull secret into staging (value never printed)
+      ansible.builtin.command:
+        cmd: "kubectl apply -n {{ env_staging.namespace }} -f -"
+        stdin: "{{ secret | to_nice_yaml }}"
+      vars:
+        secret:
+          apiVersion: v1
+          kind: Secret
+          type: kubernetes.io/dockerconfigjson
+          metadata:
+            name: "{{ pull_secret_name }}"
+            labels:
+              app.kubernetes.io/managed-by: ansible
+          data:
+            .dockerconfigjson: "{{ pull_secret_b64.stdout }}"
+      register: secret_apply
+      changed_when: "'unchanged' not in secret_apply.stdout"
+      no_log: true
+
+    - name: Show the configuration each environment now carries
+      ansible.builtin.command: >-
+        kubectl get configmap {{ configmap_name }}
+        -n {{ lookup('vars', 'env_' ~ item).namespace }}
+        -o 'jsonpath=APP_ENV={.data.APP_ENV} DB_HOST={.data.DB_HOST} RECEIPTS_BUCKET={.data.RECEIPTS_BUCKET}'
+      loop: "{{ environments }}"
+      register: cm_show
+      changed_when: false
+
+    - name: Summary
+      ansible.builtin.debug:
+        msg: "{{ cm_show.results | map(attribute='stdout') | list }}"
