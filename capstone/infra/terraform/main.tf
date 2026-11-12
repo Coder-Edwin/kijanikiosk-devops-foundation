@@ -6,7 +6,10 @@ locals {
   }
 }
 
-# The staging environment: a namespace isolated from production (default).
+# The staging environment: a separate namespace from production (default).
+# Isolation here is by name and by resources (quota + limit range below).
+# Network isolation would need a NetworkPolicy and a CNI that enforces it;
+# minikube's default CNI does not, so this is a documented production gap.
 resource "kubernetes_namespace_v1" "staging" {
   metadata {
     name   = var.staging_namespace
