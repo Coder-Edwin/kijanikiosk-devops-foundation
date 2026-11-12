@@ -1,0 +1,31 @@
+# Prometheus alert rules for kk-payments (loaded into the prometheus-rules ConfigMap).
+groups:
+  - name: kk-payments
+    rules:
+      - alert: KkPaymentsReceiptWriteErrors
+        # Share of receipt writes that failed over the last 2 minutes, per environment.
+        # A payment whose receipt is not stored is a payment the business cannot prove.
+        expr: |
+          sum by (namespace) (rate(kk_payments_receipt_writes_total{result="error"}[2m]))
+            /
+          sum by (namespace) (rate(kk_payments_receipt_writes_total[2m]))
+            > 0.05
+        for: 1m
+        labels:
+          severity: critical
+          service: kk-payments
+        annotations:
+          summary: "kk-payments in {{ $labels.namespace }} is failing to store receipts"
+          description: "{{ $value | humanizePercentage }} of receipt writes failed in the last 2 minutes."
+          runbook: "Check S3/LocalStack reachability from the namespace: kubectl logs -n {{ $labels.namespace }} -l app=kk-payments | grep 'receipt write failed'"
+
+      - alert: KkPaymentsInstanceDown
+        # A scraped kk-payments pod stopped answering /metrics.
+        expr: up{job="kk-payments"} == 0
+        for: 1m
+        labels:
+          severity: warning
+          service: kk-payments
+        annotations:
+          summary: "kk-payments pod {{ $labels.pod }} in {{ $labels.namespace }} is not responding"
+          description: "Prometheus could not scrape {{ $labels.pod }} for over a minute."
