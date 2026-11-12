@@ -1,0 +1,10 @@
+# Alertmanager configuration. Alerts are grouped per environment and shown in
+# the Alertmanager UI; a real deployment would add a Slack/email receiver here.
+route:
+  receiver: kijani-oncall
+  group_by: [alertname, namespace]
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 1h
+receivers:
+  - name: kijani-oncall

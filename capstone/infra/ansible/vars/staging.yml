@@ -1,0 +1,9 @@
+# Staging: same application, different backing services.
+namespace: kijani-staging
+app_config:
+  APP_ENV: staging
+  DB_HOST: db.staging.kijani.internal
+  RECEIPTS_BUCKET: kk-payments-receipts-staging
+  S3_ENDPOINT: http://host.minikube.internal:4566
+  AWS_REGION: us-east-1
+  LOG_LEVEL: debug

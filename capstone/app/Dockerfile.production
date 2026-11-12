@@ -1,0 +1,30 @@
+# kk-payments production image (two-stage).
+# Stage 1 installs dependencies, compiles TypeScript and runs the unit tests;
+# a failing test fails the build. Stage 2 ships only compiled JavaScript and
+# production dependencies on Alpine, running as the non-root kijani user.
+
+FROM node:20-alpine AS builder
+WORKDIR /build
+COPY package.json tsconfig.json ./
+RUN npm install --no-audit --no-fund
+COPY src ./src
+COPY test ./test
+RUN npm run build && npm test && npm prune --omit=dev
+
+FROM alpine:3.20
+ARG APP_VERSION=unknown
+ENV NODE_ENV=production \
+    APP_VERSION=${APP_VERSION} \
+    PORT=3001
+RUN apk add --no-cache nodejs \
+ && addgroup -S -g 10001 kijani \
+ && adduser -S -u 10001 -G kijani -H -s /sbin/nologin kijani
+WORKDIR /app
+COPY --from=builder --chown=kijani:kijani /build/node_modules ./node_modules
+COPY --from=builder --chown=kijani:kijani /build/dist ./dist
+COPY --chown=kijani:kijani package.json ./
+USER 10001
+EXPOSE 3001
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3001/health || exit 1
+CMD ["node", "dist/server.js"]
