@@ -1,0 +1,9 @@
+# Production runs in the default namespace (Week 8 deployment target).
+namespace: default
+app_config:
+  APP_ENV: production
+  DB_HOST: db.prod.kijani.internal
+  RECEIPTS_BUCKET: kk-payments-receipts
+  S3_ENDPOINT: http://host.minikube.internal:4566
+  AWS_REGION: us-east-1
+  LOG_LEVEL: info
