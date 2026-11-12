@@ -1,0 +1,17 @@
+# NodePort without a fixed port: NodePorts are unique across the whole cluster,
+# so staging and production each get one assigned automatically. Scripts look
+# the port up instead of hard-coding it.
+apiVersion: v1
+kind: Service
+metadata:
+  name: kk-payments-service
+  labels:
+    app: kk-payments
+spec:
+  type: NodePort
+  selector:
+    app: kk-payments
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http
