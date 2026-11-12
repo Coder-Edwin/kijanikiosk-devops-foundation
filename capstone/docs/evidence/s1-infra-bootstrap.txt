@@ -1,0 +1,211 @@
+# S1 evidence: first run of capstone/scripts/bootstrap-infra.sh on the Ubuntu VM (2026-11-12)
+# Captured from the engineer's terminal; no secret values appear (pull secret tasks use no_log).
+
+edu-vanquiz@edu-vanquiz-VMware-Virtual-Platform:~$ cd ~/kijanikiosk-devops-foundation
+git fetch origin && git checkout feature/capstone-infra
+minikube status || minikube start --driver=docker
+kubectl get secret kijani-registry-credentials -n default -o name
+bash capstone/scripts/bootstrap-infra.sh
+remote: Enumerating objects: 38, done.
+remote: Counting objects: 100% (38/38), done.
+remote: Compressing objects: 100% (33/33), done.
+remote: Total 35 (delta 10), reused 0 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (35/35), 10.38 KiB | 332.00 KiB/s, done.
+From https://github.com/Coder-Edwin/kijanikiosk-devops-foundation
+   5f75d55..8d69989  develop                -> origin/develop
+ * [new branch]      feature/capstone-infra -> origin/feature/capstone-infra
+branch 'feature/capstone-infra' set up to track 'origin/feature/capstone-infra'.
+Switched to a new branch 'feature/capstone-infra'
+minikube
+type: Control Plane
+host: Stopped
+kubelet: Stopped
+apiserver: Stopped
+kubeconfig: Stopped
+
+😄  minikube v1.39.0 on Ubuntu 24.04
+✨  Using the docker driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🚜  Pulling base image v0.0.51 ...
+🔄  Restarting existing docker container for "minikube" ...
+📦  Preparing Kubernetes v1.37.0 on containerd 2.3.4 ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+secret/kijani-registry-credentials
+[16:56:15] terraform init + apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the
+following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # kubernetes_limit_range_v1.staging will be created
+  + resource "kubernetes_limit_range_v1" "staging" {
+      + id = (known after apply)
+
+      + metadata {
+          + generation       = (known after apply)
+          + labels           = {
+              + "app.kubernetes.io/managed-by" = "terraform"
+              + "app.kubernetes.io/part-of"    = "kijanikiosk"
+              + "kijanikiosk.io/environment"   = "staging"
+            }
+          + name             = "staging-container-defaults"
+          + namespace        = "kijani-staging"
+          + resource_version = (known after apply)
+          + uid              = (known after apply)
+        }
+
+      + spec {
+          + limit {
+              + default         = {
+                  + "cpu"    = "250m"
+                  + "memory" = "128Mi"
+                }
+              + default_request = {
+                  + "cpu"    = "100m"
+                  + "memory" = "64Mi"
+                }
+              + type            = "Container"
+            }
+        }
+    }
+
+  # kubernetes_namespace_v1.staging will be created
+  + resource "kubernetes_namespace_v1" "staging" {
+      + id                               = (known after apply)
+      + wait_for_default_service_account = false
+
+      + metadata {
+          + annotations      = {
+              + "kijanikiosk.io/owner"   = "platform"
+              + "kijanikiosk.io/purpose" = "Pre-production environment; every release is smoke-tested here before the production approval gate."
+            }
+          + generation       = (known after apply)
+          + labels           = {
+              + "app.kubernetes.io/managed-by" = "terraform"
+              + "app.kubernetes.io/part-of"    = "kijanikiosk"
+              + "kijanikiosk.io/environment"   = "staging"
+            }
+          + name             = "kijani-staging"
+          + resource_version = (known after apply)
+          + uid              = (known after apply)
+        }
+    }
+
+  # kubernetes_resource_quota_v1.staging will be created
+  + resource "kubernetes_resource_quota_v1" "staging" {
+      + id = (known after apply)
+
+      + metadata {
+          + generation       = (known after apply)
+          + labels           = {
+              + "app.kubernetes.io/managed-by" = "terraform"
+              + "app.kubernetes.io/part-of"    = "kijanikiosk"
+              + "kijanikiosk.io/environment"   = "staging"
+            }
+          + name             = "staging-quota"
+          + namespace        = "kijani-staging"
+          + resource_version = (known after apply)
+          + uid              = (known after apply)
+        }
+
+      + spec {
+          + hard = {
+              + "limits.cpu"      = "2"
+              + "limits.memory"   = "2Gi"
+              + "pods"            = "10"
+              + "requests.cpu"    = "1"
+              + "requests.memory" = "1Gi"
+            }
+        }
+    }
+
+Plan: 3 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + staging_namespace = "kijani-staging"
+  + staging_quota     = {
+      + "limits.cpu"      = "2"
+      + "limits.memory"   = "2Gi"
+      + pods              = "10"
+      + "requests.cpu"    = "1"
+      + "requests.memory" = "1Gi"
+    }
+kubernetes_namespace_v1.staging: Creating...
+kubernetes_namespace_v1.staging: Creation complete after 0s [id=kijani-staging]
+kubernetes_limit_range_v1.staging: Creating...
+kubernetes_resource_quota_v1.staging: Creating...
+kubernetes_limit_range_v1.staging: Creation complete after 0s [id=kijani-staging/staging-container-defaults]
+kubernetes_resource_quota_v1.staging: Creation complete after 1s [id=kijani-staging/staging-quota]
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+staging_namespace = "kijani-staging"
+staging_quota = tomap({
+  "limits.cpu" = "2"
+  "limits.memory" = "2Gi"
+  "pods" = "10"
+  "requests.cpu" = "1"
+  "requests.memory" = "1Gi"
+})
+[16:56:25] ansible-playbook configure-environments.yml
+
+PLAY [Configure kk-payments environments] ******************************************************************************
+
+TASK [Refuse to run against anything except the expected cluster] ******************************************************
+ok: [localhost]
+
+TASK [Load per-environment settings] ***********************************************************************************
+ok: [localhost] => (item=staging)
+ok: [localhost] => (item=production)
+
+TASK [Check every target namespace exists (Terraform creates staging)] *************************************************
+ok: [localhost] => (item=staging)
+ok: [localhost] => (item=production)
+
+TASK [Apply the kk-payments ConfigMap in each environment] *************************************************************
+changed: [localhost] => (item=staging)
+changed: [localhost] => (item=production)
+
+TASK [Read the registry pull secret from production] *******************************************************************
+ok: [localhost]
+
+TASK [Copy the pull secret into staging (value never printed)] *********************************************************
+changed: [localhost]
+
+TASK [Show the configuration each environment now carries] *************************************************************
+ok: [localhost] => (item=staging)
+ok: [localhost] => (item=production)
+
+TASK [Summary] *********************************************************************************************************
+ok: [localhost] => 
+    msg:
+    - APP_ENV=staging DB_HOST=db.staging.kijani.internal RECEIPTS_BUCKET=kk-payments-receipts-staging
+    - APP_ENV=production DB_HOST=db.prod.kijani.internal RECEIPTS_BUCKET=kk-payments-receipts
+
+PLAY RECAP *************************************************************************************************************
+localhost                  : ok=8    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+[16:56:30] Result
+NAME             STATUS   AGE   LABELS
+kijani-staging   Active   6s    app.kubernetes.io/managed-by=terraform,app.kubernetes.io/part-of=kijanikiosk,kijanikiosk.io/environment=staging,kubernetes.io/metadata.name=kijani-staging
+NAME                          REQUEST                                                 LIMIT                                   AGE
+resourcequota/staging-quota   pods: 0/10, requests.cpu: 0/1, requests.memory: 0/1Gi   limits.cpu: 0/2, limits.memory: 0/2Gi   6s
+
+NAME                                    CREATED AT
+limitrange/staging-container-defaults   2026-11-12T13:56:25Z
+
+NAME                           DATA   AGE
+configmap/kk-payments-config   6      2s
+configmap/kube-root-ca.crt     1      6s
+
+NAME                                 TYPE                             DATA   AGE
+secret/kijani-registry-credentials   kubernetes.io/dockerconfigjson   1      1s
+Infrastructure layer converged in 15s
