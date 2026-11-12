@@ -1,0 +1,83 @@
+digraph kijanikiosk {
+  graph [rankdir=TB, fontname="Helvetica", fontsize=20, labelloc=t, nodesep=0.45, ranksep=0.9, pad=0.3,
+         label="KijaniKiosk Capstone (Track A): kk-payments delivery, staging to production\n "];
+  node  [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#FFFFFF", color="#37474F", penwidth=1.4];
+  edge  [fontname="Helvetica", fontsize=10, color="#455A64", fontcolor="#263238", penwidth=1.3];
+
+  dev     [label="Engineer\n(VS Code on Ubuntu)", fillcolor="#ECEFF1"];
+  github  [label="GitHub\nkijanikiosk-devops-foundation\nfeature/* -> develop -> main", fillcolor="#ECEFF1"];
+  ghcr    [label="GHCR (private)\nghcr.io/coder-edwin/kk-payments\nVERSION-GITSHA tags", fillcolor="#E0F7FA", color="#00838F"];
+
+  subgraph cluster_infra {
+    label="Infrastructure layer (IaC)"; style="rounded,dashed"; color="#6A1B9A"; fontcolor="#6A1B9A";
+    tf      [label="Terraform\n(kubernetes provider)", fillcolor="#F3E5F5", color="#6A1B9A"];
+    ansible [label="Ansible playbook", fillcolor="#F3E5F5", color="#6A1B9A"];
+  }
+
+  subgraph cluster_delivery {
+    label="Delivery layer: Jenkins pipeline"; style="rounded,dashed"; color="#E65100"; fontcolor="#E65100";
+    j_build [label="Build + test\nimage --no-cache\ntag VERSION-GITSHA", fillcolor="#FFF3E0", color="#E65100"];
+    j_stg   [label="Deploy\nto staging", fillcolor="#FFF3E0", color="#E65100"];
+    j_smoke [label="Smoke test\n/health version + env\nPOST /payments -> receipt", fillcolor="#FFF3E0", color="#E65100"];
+    j_gate  [label="Approval gate\n(approver + reason\nrecorded)", shape=diamond, fillcolor="#FFE0B2", color="#E65100"];
+    j_prod  [label="Deploy\nto production", fillcolor="#FFF3E0", color="#E65100"];
+  }
+
+  subgraph cluster_k8s {
+    label="Runtime layer: minikube cluster"; style="rounded"; color="#1565C0"; fontcolor="#1565C0";
+    subgraph cluster_stg {
+      label="namespace kijani-staging"; style="rounded,filled"; fillcolor="#E3F2FD"; color="#1565C0";
+      stg_cm  [label="ConfigMap kk-payments-config\nDB_HOST=db.staging.kijani.internal\nRECEIPTS_BUCKET=kk-payments-receipts-staging", shape=note, fillcolor="#FFFFFF"];
+      stg_app [label="kk-payments x2\nprobes, limits,\nJSON logs, /metrics", fillcolor="#BBDEFB"];
+    }
+    subgraph cluster_prod {
+      label="namespace default (production)"; style="rounded,filled"; fillcolor="#E8F5E9"; color="#2E7D32";
+      prod_cm  [label="ConfigMap kk-payments-config\nDB_HOST=db.prod.kijani.internal\nRECEIPTS_BUCKET=kk-payments-receipts", shape=note, fillcolor="#FFFFFF"];
+      prod_app [label="kk-payments x2\n(same Deployment manifest)", fillcolor="#C8E6C9"];
+    }
+    subgraph cluster_mon {
+      label="namespace monitoring (intelligence layer)"; style="rounded,filled"; fillcolor="#FFFDE7"; color="#F9A825";
+      prom  [label="Prometheus\nalert rules from repo", fillcolor="#FFF9C4", color="#F9A825"];
+      alert [label="Alertmanager", fillcolor="#FFF9C4", color="#F9A825"];
+    }
+  }
+
+  subgraph cluster_ls {
+    label="LocalStack (S3 + Lambda emulator on the VM)"; style="rounded,filled"; fillcolor="#FBE9E7"; color="#BF360C"; fontcolor="#BF360C";
+    s3_rcpt [label="S3 bucket\nkk-payments-receipts-staging", shape=cylinder, fillcolor="#FFCCBC", color="#BF360C"];
+    l_proc  [label="Lambda\nkk-receipt-processor", fillcolor="#FFCCBC", color="#BF360C"];
+    s3_proc [label="S3 bucket\nkk-payments-processed-staging", shape=cylinder, fillcolor="#FFCCBC", color="#BF360C"];
+    l_notif [label="Lambda\nkk-notifier\n(structured log line)", fillcolor="#FFCCBC", color="#BF360C"];
+    s3_prod [label="S3 bucket\nkk-payments-receipts", shape=cylinder, fillcolor="#FFCCBC", color="#BF360C"];
+  }
+
+  dev -> github   [label="git push, PR, merge"];
+  github -> j_build [label="poll SCM: new commit on main"];
+  j_build -> ghcr [label="docker push image:tag"];
+  j_build -> j_stg [label="tag"];
+  j_stg -> stg_app [label="kubectl apply\nsame manifest, -n kijani-staging"];
+  j_stg -> j_smoke [label="rollout status OK"];
+  j_smoke -> stg_app [label="HTTP checks", style=dashed];
+  j_smoke -> j_gate [label="only if smoke passes"];
+  j_gate -> j_prod [label="approved"];
+  j_prod -> prod_app [label="kubectl apply\nsame manifest, -n default"];
+
+  ghcr -> stg_app  [label="image pull\n(imagePullSecret)", style=dashed, color="#00838F"];
+  ghcr -> prod_app [label="image pull", style=dashed, color="#00838F"];
+
+  tf -> stg_cm [label="creates namespace\nkijani-staging", color="#6A1B9A", lhead=cluster_stg];
+  ansible -> stg_cm  [label="ConfigMap + pull secret", color="#6A1B9A"];
+  ansible -> prod_cm [label="ConfigMap + pull secret", color="#6A1B9A"];
+  stg_cm -> stg_app   [label="env vars", style=dotted];
+  prod_cm -> prod_app [label="env vars", style=dotted];
+
+  prod_app -> s3_prod [label="PUT receipt JSON\n(S3 API)", color="#BF360C"];
+  stg_app -> s3_rcpt [label="PUT receipt JSON\n(S3 API)", color="#BF360C"];
+  s3_rcpt -> l_proc  [label="ObjectCreated event", color="#BF360C"];
+  l_proc -> s3_proc  [label="validated receipt", color="#BF360C"];
+  s3_proc -> l_notif [label="ObjectCreated event", color="#BF360C"];
+
+  prom -> stg_app  [label="scrape /metrics", style=dashed, color="#F9A825"];
+  prom -> prod_app [label="scrape /metrics", style=dashed, color="#F9A825"];
+  prom -> alert    [label="firing alerts", color="#F9A825"];
+}
