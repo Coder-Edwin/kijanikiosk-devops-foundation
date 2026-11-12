@@ -1,0 +1,19 @@
+{
+  "name": "kk-payments",
+  "version": "1.0.0",
+  "description": "KijaniKiosk payments service: accepts payments, writes receipts to S3, exposes health, readiness and Prometheus metrics",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.mjs",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  }
+}
