@@ -1,0 +1,109 @@
+// KijaniKiosk capstone delivery pipeline (Track A).
+// Merge to main -> build + unit test -> push to GHCR -> converge config ->
+// deploy staging -> smoke test -> approval gate (reason recorded) -> production.
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+  }
+
+  // The VM is not reachable from GitHub, so Jenkins polls main every 2 minutes.
+  triggers { pollSCM('H/2 * * * *') }
+
+  environment {
+    REGISTRY   = 'ghcr.io/coder-edwin'
+    IMAGE      = "${REGISTRY}/kk-payments"
+    APP_DIR    = 'capstone/app'
+    STAGING_NS = 'kijani-staging'
+    PROD_NS    = 'default'
+  }
+
+  stages {
+    stage('Version') {
+      steps {
+        script {
+          def version = sh(returnStdout: true, script: "sed -nE 's/^[[:space:]]*\"version\":[[:space:]]*\"([^\"]+)\".*/\\1/p' ${APP_DIR}/package.json | head -1").trim()
+          def sha = sh(returnStdout: true, script: 'git rev-parse --short=7 HEAD').trim()
+          env.TAG = "${version}-${sha}"
+          currentBuild.displayName = "#${env.BUILD_NUMBER} ${env.TAG}"
+          echo "Release tag: ${env.TAG}"
+        }
+      }
+    }
+
+    stage('Build and unit test') {
+      steps {
+        // Unit tests run inside the image build; a failing test fails this stage.
+        sh 'docker build --pull -f $APP_DIR/Dockerfile.production --build-arg APP_VERSION=$TAG -t $IMAGE:$TAG $APP_DIR'
+        sh 'test "$(docker run --rm $IMAGE:$TAG whoami)" = kijani'
+        sh 'test -z "$(docker run --rm $IMAGE:$TAG sh -c "command -v tsc || true")"'
+        sh 'docker image ls $IMAGE:$TAG --format "image size: {{.Size}}"'
+      }
+    }
+
+    stage('Push to GHCR') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'ghcr', usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
+          sh 'echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin'
+          sh 'docker push $IMAGE:$TAG'
+        }
+      }
+      post { always { sh 'docker logout ghcr.io || true' } }
+    }
+
+    stage('Converge environment config') {
+      steps {
+        // Idempotent: reports changed=0 unless someone drifted the ConfigMaps.
+        dir('capstone/infra/ansible') { sh 'ansible-playbook configure-environments.yml' }
+      }
+    }
+
+    stage('Deploy to staging') {
+      steps { sh 'bash capstone/scripts/deploy.sh $STAGING_NS $IMAGE:$TAG' }
+    }
+
+    stage('Smoke test staging') {
+      steps { sh 'bash capstone/scripts/smoke-test.sh $STAGING_NS $TAG full' }
+    }
+
+    stage('Production approval') {
+      steps {
+        timeout(time: 30, unit: 'MINUTES') {
+          script {
+            def answer = input(
+              id: 'prod-gate',
+              message: "Staging smoke test passed for ${env.TAG}. Promote to production?",
+              ok: 'Approve and deploy',
+              submitterParameter: 'APPROVER',
+              parameters: [text(name: 'REASON', defaultValue: '', description: 'Why is this release safe for production? (required, recorded in the build)')]
+            )
+            def reason = (answer['REASON'] ?: '').trim()
+            if (!reason) { error('Approval rejected: a reason is required') }
+            env.APPROVER = answer['APPROVER']
+            env.APPROVAL_REASON = reason
+            writeFile file: 'approval-record.txt', text: "tag=${env.TAG}\napprover=${env.APPROVER}\nreason=${reason}\nbuild=${env.BUILD_URL}\n"
+            sh 'echo "approved_at=$(date -Iseconds)" >> approval-record.txt && cat approval-record.txt'
+          }
+        }
+      }
+    }
+
+    stage('Deploy to production') {
+      steps {
+        sh 'bash capstone/scripts/deploy.sh $PROD_NS $IMAGE:$TAG'
+        sh 'bash capstone/scripts/smoke-test.sh $PROD_NS $TAG health'
+      }
+    }
+  }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'smoke-*.txt, approval-record.txt', allowEmptyArchive: true
+    }
+    success { echo "Released ${env.TAG} to production (approved by ${env.APPROVER}: ${env.APPROVAL_REASON})" }
+    failure { echo "Pipeline stopped. Production was not changed unless the failing stage was 'Deploy to production'." }
+  }
+}
