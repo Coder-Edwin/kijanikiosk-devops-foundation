@@ -226,9 +226,19 @@ NODE_IP="$(minikube ip)"
   echo "$NODEPORT_BODY"
   hdr "In-cluster DNS: kk-payments-service.default.svc.cluster.local:3001"
   DNS_URL="http://kk-payments-service.default.svc.cluster.local:3001/health"
-  echo "\$ kubectl run dns-check --image=curlimages/curl --rm -i --restart=Never -- curl -s $DNS_URL"
-  if ! kubectl run dns-check --image=curlimages/curl --rm -i --restart=Never \
-        --pod-running-timeout=60s -- curl -s --max-time 10 "$DNS_URL" 2>&1; then
+  # Run the curl Pod to completion and read its logs (attaching with -i can
+  # miss the output when curl finishes before the attach happens).
+  echo "\$ kubectl run dns-check --image=curlimages/curl --restart=Never -- curl -s $DNS_URL && kubectl logs dns-check"
+  kubectl delete pod dns-check --ignore-not-found >/dev/null 2>&1 || true
+  DNS_BODY=""
+  if kubectl run dns-check --image=curlimages/curl --restart=Never -- curl -s --max-time 10 "$DNS_URL" >/dev/null 2>&1 \
+     && kubectl wait --for=jsonpath='{.status.phase}'=Succeeded pod/dns-check --timeout=90s >/dev/null 2>&1; then
+    DNS_BODY="$(kubectl logs dns-check 2>&1)"
+  fi
+  kubectl delete pod dns-check --ignore-not-found >/dev/null 2>&1 || true
+  if [[ -n "$DNS_BODY" ]]; then
+    echo "$DNS_BODY"
+  else
     POD1="$(kubectl get pod -l app=kk-payments -o name | head -1)"
     echo "(curl Pod unavailable; exec into $POD1 instead)"
     echo "\$ kubectl exec $POD1 -- wget -qO- $DNS_URL"
@@ -308,8 +318,11 @@ rm -f "$WATCH_LOG"
 if [[ -z "${SKIP_GIT_PUSH:-}" ]]; then
   step "Commit evidence and push $BRANCH"
   git add -A .
-  git commit -m "Week 8 Friday: pipeline evidence for kk-payments $TAG" || true
-  git push -u origin "$BRANCH"
+  if ! git diff --cached --quiet; then
+    git commit -m "Week 8 Friday: pipeline evidence for kk-payments $TAG" \
+      || fail "git commit failed (set git user.name and user.email, then commit week8/friday by hand)"
+  fi
+  git push -u origin "$BRANCH" || fail "git push failed"
 fi
 
 step "DONE. Tag $TAG deployed. Evidence files are in week8/friday/."
