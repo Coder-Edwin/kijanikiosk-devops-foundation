@@ -1,0 +1,38 @@
+# kk-payments production image: two-stage build.
+# Stage 1 compiles TypeScript; stage 2 ships only the compiled JavaScript
+# on a minimal Alpine base with the Node.js runtime and nothing else.
+
+# ---- Stage 1: build ----------------------------------------------------------
+FROM node:20-alpine AS builder
+WORKDIR /build
+COPY package.json tsconfig.json ./
+RUN npm install --no-audit --no-fund
+COPY src ./src
+RUN npm run build
+
+# ---- Stage 2: runtime --------------------------------------------------------
+FROM alpine:3.20
+# Version string (VERSION-GITSHA) passed in by the pipeline so /health reports
+# exactly which image is running.
+ARG APP_VERSION=unknown
+ENV NODE_ENV=production \
+    APP_VERSION=${APP_VERSION} \
+    PORT=3001
+
+# Node.js runtime only: no npm, no TypeScript, no devDependencies.
+RUN apk add --no-cache nodejs \
+ && addgroup -S kijani \
+ && adduser -S -G kijani -H -s /sbin/nologin kijani
+
+WORKDIR /app
+COPY --from=builder --chown=kijani:kijani /build/dist ./dist
+COPY --chown=kijani:kijani package.json ./
+
+USER kijani
+EXPOSE 3001
+
+# start-period 30s: generous so normal startup never counts as a failure.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3001/health || exit 1
+
+CMD ["node", "dist/server.js"]

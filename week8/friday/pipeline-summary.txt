@@ -1,0 +1,10 @@
+Week 8 Friday pipeline summary (2026-11-12 02:31:45)
+TAG=1.8.0-3d51203
+IMAGE=ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+BASELINE_MB=1648.2
+PRODUCTION_MB=89.8
+SIZE_REDUCTION_PERCENT=94.6
+HEALTHY_WITHIN_SECONDS=7
+SELF_HEAL_TO_RUNNING_SECONDS=3.4
+SELF_HEAL_TO_READY_SECONDS=3.4
+REGISTRY_CHOICE=Cloud registry (ghcr.io), reachable from minikube over the internet (Challenge C option 2)

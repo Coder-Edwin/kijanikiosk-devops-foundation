@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kk-payments
+  labels:
+    app: kk-payments
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kk-payments
+  template:
+    metadata:
+      labels:
+        app: kk-payments
+    spec:
+      imagePullSecrets:
+        - name: kijani-registry-credentials
+      containers:
+        - name: kk-payments
+          # Set by run-pipeline.sh to REGISTRY/kk-payments:VERSION-GITSHA
+          image: ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3001
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi

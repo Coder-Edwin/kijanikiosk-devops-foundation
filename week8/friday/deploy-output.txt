@@ -1,0 +1,45 @@
+
+==== Namespace reset  (2026-11-12 02:26:09) ====
+$ kubectl delete deployment kk-payments --ignore-not-found
+$ kubectl delete service kk-payments-service --ignore-not-found
+$ kubectl get all -l app=kk-payments
+No resources found in default namespace.
+
+==== ImagePullSecret still present (name only) ====
+$ kubectl get secret kijani-registry-credentials -o custom-columns=NAME:.metadata.name,TYPE:.type
+NAME                          TYPE
+kijani-registry-credentials   kubernetes.io/dockerconfigjson
+
+==== Remove locally cached kk-payments images (cold build) ====
+$ docker images --filter=reference=*kk-payments*
+IMAGE   ID             DISK USAGE   CONTENT SIZE   EXTRA
+(no cached kk-payments images)
+
+==== Tag check: manifest vs registry ====
+manifest : ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+registry : ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+
+==== Apply deployment  (2026-11-12 02:31:02) ====
+$ kubectl apply -f kk-payments-deployment.yaml
+deployment.apps/kk-payments created
+$ kubectl rollout status deployment/kk-payments --timeout=180s
+Waiting for deployment "kk-payments" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "kk-payments" rollout to finish: 1 of 2 updated replicas are available...
+deployment "kk-payments" successfully rolled out
+Both Pods Running and ready after 18s
+
+==== kubectl get pods ====
+$ kubectl get pods -l app=kk-payments -o wide
+NAME                           READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+kk-payments-6b7dcb6766-gvtvb   1/1     Running   0          17s   10.244.0.4   minikube   <none>           <none>
+kk-payments-6b7dcb6766-jrrll   1/1     Running   0          17s   10.244.0.3   minikube   <none>           <none>
+
+==== kubectl get deployment ====
+$ kubectl get deployment kk-payments
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+kk-payments   2/2     2            2           17s
+
+==== Image actually running ====
+$ kubectl get pods -l app=kk-payments -o jsonpath={range .items[*]}{.metadata.name}{"  "}{.spec.containers[0].image}{"\n"}{end}
+kk-payments-6b7dcb6766-gvtvb  ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203
+kk-payments-6b7dcb6766-jrrll  ghcr.io/coder-edwin/kk-payments:1.8.0-3d51203

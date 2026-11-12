@@ -1,0 +1,35 @@
+KijaniKiosk kk-payments: self-healing re-run (fresh deployment, 2026-11-12)
+
+==== Pods before deletion ====
+kk-payments-6b7dcb6766-gvtvb
+kk-payments-6b7dcb6766-jrrll
+
+==== kubectl get pods -w  (timestamped) ====
+02:31:36.940  kk-payments-6b7dcb6766-gvtvb   1/1   Running   0     33s
+02:31:36.944  kk-payments-6b7dcb6766-jrrll   1/1   Running   0     33s
+02:31:39.198  kk-payments-6b7dcb6766-gvtvb   1/1   Terminating   0     36s
+02:31:39.238  kk-payments-6b7dcb6766-gzj56   0/1   Pending       0     0s
+02:31:39.277  kk-payments-6b7dcb6766-gvtvb   1/1   Terminating   0     36s
+02:31:39.316  kk-payments-6b7dcb6766-gzj56   0/1   Pending       0     0s
+02:31:39.430  kk-payments-6b7dcb6766-gzj56   0/1   ContainerCreating   0     0s
+02:31:39.771  kk-payments-6b7dcb6766-gvtvb   0/1   Completed           0     36s
+02:31:40.423  kk-payments-6b7dcb6766-gvtvb   0/1   Completed           0     37s
+02:31:40.464  kk-payments-6b7dcb6766-gvtvb   0/1   Completed           0     37s
+02:31:40.479  kk-payments-6b7dcb6766-gvtvb   0/1   Completed           0     37s
+02:31:40.772  kk-payments-6b7dcb6766-gzj56   0/1   ContainerCreating   0     1s
+02:31:41.305  kk-payments-6b7dcb6766-gzj56   1/1   Running             0     2s
+
+==== Measurement ====
+Deleted Pod     : kk-payments-6b7dcb6766-gvtvb
+Replacement Pod : kk-payments-6b7dcb6766-gzj56
+T0 (delete issued)          : 02:31:38.797
+T1 (replacement Running)    : 02:31:42.149
+T1 (replacement Ready)      : 02:31:42.161
+Recovery time T1 - T0       : 3.4 s  (to Running)
+Recovery time to Ready      : 3.4 s
+
+==== Pods after recovery ====
+$ kubectl get pods -l app=kk-payments
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-6b7dcb6766-gzj56   1/1     Running   0          6s
+kk-payments-6b7dcb6766-jrrll   1/1     Running   0          42s
